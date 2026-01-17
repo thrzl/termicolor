@@ -56,7 +56,7 @@ export function ProfileList({
       <Text fw={600} style={{ color: 'var(--text-secondary)' }}>
         Saved Profiles
       </Text>
-      <SimpleGrid cols={{ base: 2, sm: 3, md: 4 }} spacing="md">
+      <SimpleGrid cols={{ base: 1, xs: 2 }} spacing="md">
         {profiles.map((profile) => (
           <ProfileCard
             key={profile.id}

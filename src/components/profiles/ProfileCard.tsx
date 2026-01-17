@@ -93,7 +93,7 @@ export function ProfileCard({ profile, onLoad, onDelete, onExport }: ProfileCard
         >
           {profile.name}
         </Text>
-        <Group gap={8} justify="center">
+        <Group gap={8} justify="center" wrap="nowrap">
           <Tooltip label="Load profile">
             <ActionIcon
               variant="subtle"
