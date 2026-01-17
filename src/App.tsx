@@ -395,7 +395,7 @@ export function App() {
                           leftSection={<IconDeviceFloppy size={16} />}
                           onClick={openSaveModal}
                           size="sm"
-                          className="phosphor-btn"
+                          className="accent-btn"
                           style={{
                             background: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%)',
                             color: '#fff',
@@ -514,7 +514,7 @@ export function App() {
             </Button>
             <Button
               onClick={handleSaveProfile}
-              className="phosphor-btn"
+              className="accent-btn"
               style={{
                 background: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%)',
                 color: '#fff',
