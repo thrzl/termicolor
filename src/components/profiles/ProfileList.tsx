@@ -39,9 +39,10 @@ export function ProfileList({
         p="xl"
         radius="lg"
         style={{
-          background: 'rgba(26, 27, 35, 0.6)',
+          background: 'var(--bg-card)',
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(139, 92, 246, 0.1)',
+          border: '1px solid var(--border-subtle)',
+          boxShadow: 'var(--shadow-card)',
         }}
       >
         <Text ta="center" style={{ color: 'var(--text-secondary)' }}>

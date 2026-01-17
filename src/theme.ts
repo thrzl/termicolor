@@ -66,13 +66,11 @@ export const theme = createTheme({
   cursorType: 'pointer',
   components: {
     Paper: {
-      defaultProps: {
-        bg: 'rgba(18, 18, 30, 0.6)',
-      },
       styles: {
         root: {
+          backgroundColor: 'var(--bg-card)',
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(139, 92, 246, 0.1)',
+          border: '1px solid var(--border-subtle)',
         },
       },
     },
@@ -129,10 +127,11 @@ export const theme = createTheme({
     TextInput: {
       styles: {
         input: {
-          backgroundColor: 'rgba(18, 18, 30, 0.8)',
-          borderColor: 'rgba(139, 92, 246, 0.1)',
+          backgroundColor: 'var(--bg-surface)',
+          borderColor: 'var(--border-subtle)',
+          color: 'var(--text-primary)',
           '&:focus': {
-            borderColor: 'rgba(139, 92, 246, 0.5)',
+            borderColor: 'var(--border-glow)',
           },
         },
       },
@@ -140,9 +139,9 @@ export const theme = createTheme({
     Modal: {
       styles: {
         content: {
-          backgroundColor: 'rgba(18, 18, 30, 0.95)',
+          backgroundColor: 'var(--bg-surface)',
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(139, 92, 246, 0.1)',
+          border: '1px solid var(--border-subtle)',
         },
         header: {
           backgroundColor: 'transparent',

@@ -20,9 +20,10 @@ export function ImagePreview({ src, onClear }: ImagePreviewProps) {
       p="xs"
       pos="relative"
       style={{
-        background: 'rgba(26, 27, 35, 0.6)',
+        background: 'var(--bg-card)',
         backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(255, 255, 255, 0.06)',
+        border: '1px solid var(--border-subtle)',
+        boxShadow: 'var(--shadow-card)',
       }}
     >
       <Group justify="flex-end" mb="xs">
