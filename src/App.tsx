@@ -310,51 +310,53 @@ export function App() {
       </Box>
 
       <Container size="xl" style={{ position: 'relative', zIndex: 2 }}>
-        <Tabs defaultValue="create" variant="pills">
-          <Tabs.List
-            mb="xl"
-            style={{
-              background: 'rgba(18, 19, 24, 0.8)',
-              padding: 6,
-              borderRadius: 12,
-              border: '1px solid rgba(57, 255, 20, 0.1)',
-              backdropFilter: 'blur(10px)',
-              width: 'fit-content',
-            }}
-          >
-            <Tabs.Tab
-              value="create"
-              leftSection={<IconPalette size={16} />}
-              style={{
-                fontWeight: 600,
-                fontFamily: '"Space Grotesk", sans-serif',
-                transition: 'all 0.2s ease',
-              }}
-            >
-              Create New
-            </Tabs.Tab>
-            <Tabs.Tab
-              value="profiles"
-              leftSection={<IconHistory size={16} />}
-              style={{
-                fontWeight: 600,
-                fontFamily: '"Space Grotesk", sans-serif',
-                transition: 'all 0.2s ease',
-              }}
-            >
-              Saved Profiles
-              {profiles.length > 0 && (
-                <Text span ml={6} size="sm" style={{ opacity: 0.6 }}>
-                  ({profiles.length})
-                </Text>
-              )}
-            </Tabs.Tab>
-          </Tabs.List>
+        <Grid gutter="xl">
+          {/* Left column: Tabs with Image/Palette or Profiles */}
+          <Grid.Col span={{ base: 12, md: 4 }}>
+            <Tabs defaultValue="create" variant="pills">
+              <Tabs.List
+                mb="lg"
+                grow
+                style={{
+                  background: 'rgba(18, 19, 24, 0.8)',
+                  padding: 4,
+                  borderRadius: 10,
+                  border: '1px solid rgba(57, 255, 20, 0.1)',
+                  backdropFilter: 'blur(10px)',
+                }}
+              >
+                <Tabs.Tab
+                  value="create"
+                  leftSection={<IconPalette size={14} />}
+                  style={{
+                    fontWeight: 600,
+                    fontFamily: '"Space Grotesk", sans-serif',
+                    transition: 'all 0.2s ease',
+                    fontSize: 13,
+                  }}
+                >
+                  Create
+                </Tabs.Tab>
+                <Tabs.Tab
+                  value="profiles"
+                  leftSection={<IconHistory size={14} />}
+                  style={{
+                    fontWeight: 600,
+                    fontFamily: '"Space Grotesk", sans-serif',
+                    transition: 'all 0.2s ease',
+                    fontSize: 13,
+                  }}
+                >
+                  Saved
+                  {profiles.length > 0 && (
+                    <Text span ml={4} size="xs" style={{ opacity: 0.6 }}>
+                      ({profiles.length})
+                    </Text>
+                  )}
+                </Tabs.Tab>
+              </Tabs.List>
 
-          <Tabs.Panel value="create">
-            <Grid gutter="xl">
-              {/* Left column: Image and Palette */}
-              <Grid.Col span={{ base: 12, md: 4 }}>
+              <Tabs.Panel value="create">
                 <Stack gap="lg">
                   {/* Image upload/preview */}
                   {imageUrl ? (
@@ -375,83 +377,78 @@ export function App() {
                   {/* Actions */}
                   {colors.length > 0 && (
                     <Paper
-                      p="lg"
+                      p="md"
                       radius="lg"
                       className="glass-card"
                       style={{
                         border: '1px solid rgba(57, 255, 20, 0.15)',
                       }}
                     >
-                      <Stack gap="md">
-                        <Group justify="space-between" align="center">
-                          <Text fw={600} size="sm" style={{ color: 'var(--text-secondary)' }}>
-                            Export & Save
-                          </Text>
-                        </Group>
-                        <Group grow>
-                          <Button
-                            leftSection={<IconDeviceFloppy size={18} />}
-                            onClick={openSaveModal}
-                            className="phosphor-btn"
-                            style={{
-                              background: 'linear-gradient(135deg, #2eb810 0%, #39ff14 100%)',
-                              color: '#000',
-                              fontWeight: 600,
-                            }}
-                          >
-                            Save
-                          </Button>
-                          <Button
-                            variant="outline"
-                            leftSection={<IconDownload size={18} />}
-                            onClick={handleExportCurrent}
-                            style={{
-                              borderColor: 'rgba(57, 255, 20, 0.3)',
-                              color: '#39ff14',
-                            }}
-                          >
-                            Export
-                          </Button>
-                        </Group>
-                      </Stack>
+                      <Group grow>
+                        <Button
+                          leftSection={<IconDeviceFloppy size={16} />}
+                          onClick={openSaveModal}
+                          size="sm"
+                          className="phosphor-btn"
+                          style={{
+                            background: 'linear-gradient(135deg, #2eb810 0%, #39ff14 100%)',
+                            color: '#000',
+                            fontWeight: 600,
+                          }}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          variant="outline"
+                          leftSection={<IconDownload size={16} />}
+                          onClick={handleExportCurrent}
+                          size="sm"
+                          style={{
+                            borderColor: 'rgba(57, 255, 20, 0.3)',
+                            color: '#39ff14',
+                          }}
+                        >
+                          Export
+                        </Button>
+                      </Group>
                     </Paper>
                   )}
                 </Stack>
-              </Grid.Col>
+              </Tabs.Panel>
 
-              {/* Right column: Color Mapping and Preview */}
-              <Grid.Col span={{ base: 12, md: 8 }}>
-                <Stack gap="lg">
-                  {/* Terminal Preview */}
-                  <TerminalPreview scheme={scheme} />
+              <Tabs.Panel value="profiles">
+                <ProfileList
+                  profiles={profiles}
+                  isLoading={isLoadingProfiles}
+                  onLoad={handleLoadProfile}
+                  onDelete={handleDeleteProfile}
+                  onExport={handleExportProfile}
+                />
+              </Tabs.Panel>
+            </Tabs>
+          </Grid.Col>
 
-                  {/* Color Mapper */}
-                  <ColorMapper
-                    scheme={scheme}
-                    extractedColors={colors}
-                    minContrast={minContrast}
-                    readabilityReport={readabilityReport}
-                    onANSIColorChange={setANSIColor}
-                    onUIColorChange={setUIColor}
-                    onRegenerate={handleRegenerate}
-                    onMinContrastChange={setMinContrast}
-                    onAutoFix={autoFixContrast}
-                  />
-                </Stack>
-              </Grid.Col>
-            </Grid>
-          </Tabs.Panel>
+          {/* Right column: Color Mapping and Preview (always visible) */}
+          <Grid.Col span={{ base: 12, md: 8 }}>
+            <Stack gap="lg">
+              {/* Terminal Preview */}
+              <TerminalPreview scheme={scheme} />
 
-          <Tabs.Panel value="profiles">
-            <ProfileList
-              profiles={profiles}
-              isLoading={isLoadingProfiles}
-              onLoad={handleLoadProfile}
-              onDelete={handleDeleteProfile}
-              onExport={handleExportProfile}
-            />
-          </Tabs.Panel>
-        </Tabs>
+              {/* Color Mapper */}
+              <ColorMapper
+                scheme={scheme}
+                extractedColors={colors}
+                minContrast={minContrast}
+                readabilityReport={readabilityReport}
+                onANSIColorChange={setANSIColor}
+                onUIColorChange={setUIColor}
+                onRegenerate={handleRegenerate}
+                onMinContrastChange={setMinContrast}
+                onAutoFix={autoFixContrast}
+              />
+            </Stack>
+          </Grid.Col>
+        </Grid>
       </Container>
 
       {/* Save Profile Modal */}
