@@ -79,52 +79,51 @@ export function ProfileCard({ profile, onLoad, onDelete, onExport }: ProfileCard
         )}
       </Card.Section>
 
-      <Stack gap="xs" mt="sm">
-        <Group justify="space-between">
-          <Text
-            fw={500}
-            size="sm"
-            style={{
-              cursor: 'pointer',
-              color: 'var(--text-primary)',
-              fontFamily: '"Space Grotesk", sans-serif',
-            }}
-            onClick={onLoad}
-          >
-            {profile.name}
-          </Text>
-          <Group gap={4}>
-            <Tooltip label="Load profile">
-              <ActionIcon
-                variant="subtle"
-                size="sm"
-                onClick={onLoad}
-                style={{ color: '#39ff14' }}
-              >
-                <IconEdit size={14} />
-              </ActionIcon>
-            </Tooltip>
-            <Tooltip label="Export">
-              <ActionIcon
-                variant="subtle"
-                size="sm"
-                onClick={onExport}
-                style={{ color: '#ffb000' }}
-              >
-                <IconDownload size={14} />
-              </ActionIcon>
-            </Tooltip>
-            <Tooltip label="Delete">
-              <ActionIcon
-                variant="subtle"
-                size="sm"
-                onClick={onDelete}
-                style={{ color: '#ff5f57' }}
-              >
-                <IconTrash size={14} />
-              </ActionIcon>
-            </Tooltip>
-          </Group>
+      <Stack gap={8} mt="sm" align="center">
+        <Text
+          fw={500}
+          size="sm"
+          ta="center"
+          style={{
+            cursor: 'pointer',
+            color: 'var(--text-primary)',
+            fontFamily: '"Space Grotesk", sans-serif',
+          }}
+          onClick={onLoad}
+        >
+          {profile.name}
+        </Text>
+        <Group gap={8} justify="center">
+          <Tooltip label="Load profile">
+            <ActionIcon
+              variant="subtle"
+              size="sm"
+              onClick={onLoad}
+              style={{ color: '#39ff14' }}
+            >
+              <IconEdit size={16} />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip label="Export">
+            <ActionIcon
+              variant="subtle"
+              size="sm"
+              onClick={onExport}
+              style={{ color: '#ffb000' }}
+            >
+              <IconDownload size={16} />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip label="Delete">
+            <ActionIcon
+              variant="subtle"
+              size="sm"
+              onClick={onDelete}
+              style={{ color: '#ff5f57' }}
+            >
+              <IconTrash size={16} />
+            </ActionIcon>
+          </Tooltip>
         </Group>
         <Text size="xs" style={{ color: 'var(--text-muted)' }}>
           {new Date(profile.updatedAt).toLocaleDateString()}
