@@ -1,0 +1,269 @@
+/**
+ * Termicolor - Phosphor Terminal Aesthetic
+ * A dark, glowing, CRT-inspired design
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Phosphor colors */
+  --phosphor-green: #39ff14;
+  --phosphor-green-dim: #2eb810;
+  --phosphor-amber: #ffb000;
+  --phosphor-cyan: #00ffff;
+
+  /* Dark theme base */
+  --bg-deep: #0a0a0c;
+  --bg-surface: #121318;
+  --bg-elevated: #1a1b23;
+  --bg-card: rgba(26, 27, 35, 0.8);
+
+  /* Text */
+  --text-primary: #e8e8e8;
+  --text-secondary: #888899;
+  --text-muted: #555566;
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-glow: rgba(57, 255, 20, 0.3);
+
+  /* Glow effects */
+  --glow-green: 0 0 20px rgba(57, 255, 20, 0.4), 0 0 40px rgba(57, 255, 20, 0.2), 0 0 60px rgba(57, 255, 20, 0.1);
+  --glow-amber: 0 0 20px rgba(255, 176, 0, 0.4), 0 0 40px rgba(255, 176, 0, 0.2);
+}
+
+/* Base styles */
+html {
+  background: var(--bg-deep);
+}
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+
+/* Animated grid background */
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(57, 255, 20, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(57, 255, 20, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Noise texture overlay */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Scanline effect for terminal */
+.scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  z-index: 10;
+}
+
+/* Terminal glow container */
+.terminal-glow {
+  position: relative;
+  border-radius: 16px;
+  background: var(--bg-elevated);
+  box-shadow:
+    0 0 0 1px rgba(57, 255, 20, 0.1),
+    0 4px 30px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(57, 255, 20, 0.15),
+    0 0 100px rgba(57, 255, 20, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.terminal-glow:hover {
+  box-shadow:
+    0 0 0 1px rgba(57, 255, 20, 0.2),
+    0 8px 40px rgba(0, 0, 0, 0.6),
+    0 0 80px rgba(57, 255, 20, 0.25),
+    0 0 120px rgba(57, 255, 20, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+/* CRT screen effect */
+.crt-screen {
+  position: relative;
+  overflow: hidden;
+}
+
+.crt-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    rgba(0, 0, 0, 0.2) 90%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Blinking cursor animation */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(57, 255, 20, 0.5), 0 0 60px rgba(57, 255, 20, 0.2);
+  }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+  97% { opacity: 0.9; }
+  98% { opacity: 1; }
+}
+
+/* Glass card effect */
+.glass-card {
+  background: rgba(26, 27, 35, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+}
+
+/* Phosphor button */
+.phosphor-btn {
+  background: linear-gradient(135deg, var(--phosphor-green-dim) 0%, var(--phosphor-green) 100%);
+  color: #000;
+  font-weight: 600;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+}
+
+.phosphor-btn:hover {
+  box-shadow: 0 0 30px rgba(57, 255, 20, 0.5), 0 0 60px rgba(57, 255, 20, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Accent text */
+.text-glow {
+  color: var(--phosphor-green);
+  text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+}
+
+/* Hero title effect */
+.hero-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 3rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--phosphor-green) 0%, var(--phosphor-cyan) 50%, var(--phosphor-amber) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 0 30px rgba(57, 255, 20, 0.3));
+}
+
+/* Dropzone styling */
+.dropzone-phosphor {
+  background: linear-gradient(135deg, rgba(57, 255, 20, 0.03) 0%, rgba(255, 176, 0, 0.02) 100%);
+  border: 2px dashed rgba(57, 255, 20, 0.3);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.dropzone-phosphor:hover {
+  border-color: rgba(57, 255, 20, 0.6);
+  background: linear-gradient(135deg, rgba(57, 255, 20, 0.08) 0%, rgba(255, 176, 0, 0.04) 100%);
+  box-shadow: 0 0 40px rgba(57, 255, 20, 0.1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-elevated);
+  border-radius: 4px;
+  border: 2px solid var(--bg-surface);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(57, 255, 20, 0.3);
+}
+
+/* Override Mantine defaults for dark theme */
+.mantine-Paper-root {
+  background: var(--bg-card) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+/* Subtle animated gradient for special elements */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    90deg,
+    var(--phosphor-green),
+    var(--phosphor-cyan),
+    var(--phosphor-amber),
+    var(--phosphor-green)
+  );
+  background-size: 300% 100%;
+  animation: gradient-shift 8s linear infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.6;
+  z-index: -1;
+}
