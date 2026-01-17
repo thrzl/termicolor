@@ -16,7 +16,6 @@ import {
   IconSun,
   IconChevronDown,
   IconFileImport,
-  IconBrandGithub,
 } from '@tabler/icons-react';
 import type { FileWithPath } from '@mantine/dropzone';
 
@@ -517,41 +516,30 @@ export function App() {
         </Grid>
       </Container>
 
-      {/* Footer */}
+      {/* Footer - sticky bottom */}
       <Box
         component="footer"
         style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
           textAlign: 'center',
-          padding: '40px 20px 24px',
-          marginTop: 40,
+          padding: '12px 20px',
+          background: 'linear-gradient(to top, var(--bg-deep) 0%, transparent 100%)',
+          pointerEvents: 'none',
         }}
       >
-        <Group justify="center" gap="xs">
-          <Text
-            size="xs"
-            style={{
-              color: 'var(--text-tertiary)',
-              fontFamily: '"Space Grotesk", sans-serif',
-            }}
-          >
-            made by <span style={{ color: '#8b5cf6', fontWeight: 500 }}>haai</span>
-          </Text>
-          <a
-            href="https://github.com/WouterDurnez"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: 'var(--text-tertiary)',
-              display: 'flex',
-              alignItems: 'center',
-              transition: 'color 0.2s ease',
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.color = '#8b5cf6'}
-            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-tertiary)'}
-          >
-            <IconBrandGithub size={16} />
-          </a>
-        </Group>
+        <Text
+          size="xs"
+          style={{
+            color: 'var(--text-tertiary)',
+            fontFamily: '"Space Grotesk", sans-serif',
+            pointerEvents: 'auto',
+          }}
+        >
+          made by <span style={{ color: '#8b5cf6', fontWeight: 500 }}>haai</span>
+        </Text>
       </Box>
 
       {/* Save Profile Modal */}
