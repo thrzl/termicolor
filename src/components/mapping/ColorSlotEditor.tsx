@@ -74,23 +74,16 @@ export function ColorSlotEditor({
           >
             {label}
           </Text>
-          <Box style={{ position: 'relative' }}>
-            <Box
-              style={{
-                width: size,
-                height: size,
-                backgroundColor: hex,
-                borderRadius: 'var(--mantine-radius-sm)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-                boxShadow: `0 0 8px ${hex}40`,
-              }}
-            />
-            {contrastInfo && (
-              <Box style={{ position: 'absolute', top: -4, right: -4 }}>
-                <ContrastBadge info={contrastInfo} compact />
-              </Box>
-            )}
-          </Box>
+          <Box
+            style={{
+              width: size,
+              height: size,
+              backgroundColor: hex,
+              borderRadius: 'var(--mantine-radius-sm)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: `0 0 8px ${hex}40`,
+            }}
+          />
           <Text
             size="9px"
             ff="monospace"

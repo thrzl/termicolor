@@ -187,9 +187,9 @@ export function App() {
         style={{
           position: 'relative',
           borderBottom: '1px solid rgba(57, 255, 20, 0.1)',
-          marginBottom: 40,
-          paddingTop: 48,
-          paddingBottom: 48,
+          marginBottom: 32,
+          paddingTop: 32,
+          paddingBottom: 32,
         }}
       >
         {/* Hero glow effect */}
@@ -263,54 +263,43 @@ export function App() {
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: 4,
-                      padding: '4px 12px',
-                      borderRadius: 6,
+                      padding: '2px 8px',
+                      borderRadius: 4,
                       background: 'rgba(57, 255, 20, 0.1)',
                       border: '1px solid rgba(57, 255, 20, 0.4)',
                       color: '#39ff14',
-                      fontWeight: 700,
-                      fontFamily: '"Space Mono", monospace',
-                      fontSize: '1.125rem',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                      boxShadow: '0 0 15px rgba(57, 255, 20, 0.2)',
+                      fontWeight: 600,
+                      fontFamily: '"Space Grotesk", sans-serif',
+                      fontSize: 'inherit',
+                      boxShadow: '0 0 10px rgba(57, 255, 20, 0.15)',
                       transition: 'all 0.2s ease',
+                      verticalAlign: 'baseline',
                     }}
                   >
-                    {isDarkMode ? (
-                      <>
-                        <IconMoon size={16} />
-                        Dark
-                      </>
-                    ) : (
-                      <>
-                        <IconSun size={16} />
-                        Light
-                      </>
-                    )}
-                    <IconChevronDown size={14} />
+                    {isDarkMode ? 'dark' : 'light'}
+                    <IconChevronDown size={12} style={{ marginLeft: 2 }} />
                   </UnstyledButton>
                 </Menu.Target>
                 <Menu.Dropdown>
                   <Menu.Item
-                    leftSection={<IconMoon size={16} style={{ color: '#39ff14' }} />}
+                    leftSection={<IconMoon size={14} style={{ color: '#39ff14' }} />}
                     onClick={() => !isDarkMode && toggleMode()}
                     style={{
                       color: isDarkMode ? '#39ff14' : 'var(--text-secondary)',
                       fontWeight: isDarkMode ? 600 : 400,
                     }}
                   >
-                    Dark Mode
+                    Dark
                   </Menu.Item>
                   <Menu.Item
-                    leftSection={<IconSun size={16} style={{ color: '#ffaa00' }} />}
+                    leftSection={<IconSun size={14} style={{ color: '#ffaa00' }} />}
                     onClick={() => isDarkMode && toggleMode()}
                     style={{
                       color: !isDarkMode ? '#ffaa00' : 'var(--text-secondary)',
                       fontWeight: !isDarkMode ? 600 : 400,
                     }}
                   >
-                    Light Mode
+                    Light
                   </Menu.Item>
                 </Menu.Dropdown>
               </Menu>
@@ -410,7 +399,7 @@ export function App() {
                               fontWeight: 600,
                             }}
                           >
-                            Save Profile
+                            Save
                           </Button>
                           <Button
                             variant="outline"
@@ -421,7 +410,7 @@ export function App() {
                               color: '#39ff14',
                             }}
                           >
-                            Export .itermcolors
+                            Export
                           </Button>
                         </Group>
                       </Stack>
@@ -496,9 +485,16 @@ export function App() {
             data-autofocus
             size="md"
             styles={{
+              label: {
+                color: 'var(--text-secondary)',
+              },
               input: {
                 background: 'rgba(10, 10, 12, 0.8)',
                 borderColor: 'rgba(57, 255, 20, 0.2)',
+                color: 'var(--text-primary)',
+                '&::placeholder': {
+                  color: 'var(--text-tertiary)',
+                },
                 '&:focus': {
                   borderColor: 'rgba(57, 255, 20, 0.5)',
                 },
