@@ -375,27 +375,12 @@ export function TerminalPreview({ scheme }: TerminalPreviewProps) {
         }}
       />
 
-      {/* CRT vignette */}
-      <Box
-        style={{
-          position: 'absolute',
-          inset: 0,
-          pointerEvents: 'none',
-          background: `radial-gradient(
-            ellipse at center,
-            transparent 0%,
-            transparent 60%,
-            rgba(0, 0, 0, 0.3) 100%
-          )`,
-          zIndex: 15,
-        }}
-      />
 
       {/* Title bar */}
       <Box
         style={{
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+          background: 'linear-gradient(180deg, rgba(128,128,128,0.15) 0%, rgba(128,128,128,0.05) 100%)',
+          borderBottom: '1px solid var(--border-subtle)',
           padding: '12px 16px',
           display: 'flex',
           alignItems: 'center',
@@ -407,7 +392,7 @@ export function TerminalPreview({ scheme }: TerminalPreviewProps) {
           size="xs"
           ff="monospace"
           style={{
-            color: 'rgba(255, 255, 255, 0.5)',
+            color: 'var(--text-muted)',
             letterSpacing: '0.05em',
           }}
         >
@@ -421,7 +406,7 @@ export function TerminalPreview({ scheme }: TerminalPreviewProps) {
         style={{
           background: bg,
           padding: '8px 12px',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+          borderBottom: '1px solid var(--border-subtle)',
         }}
       >
         <Group gap={4}>
@@ -446,18 +431,7 @@ export function TerminalPreview({ scheme }: TerminalPreviewProps) {
           position: 'relative',
         }}
       >
-        {/* Inner shadow for depth */}
-        <Box
-          style={{
-            position: 'absolute',
-            inset: 0,
-            pointerEvents: 'none',
-            boxShadow: 'inset 0 4px 30px rgba(0, 0, 0, 0.4)',
-            zIndex: 10,
-          }}
-        />
-
-        <Box style={{ position: 'relative', zIndex: 5 }}>
+        <Box style={{ position: 'relative' }}>
           {view === 'swatches' && <SwatchesView scheme={scheme} />}
           {view === 'bash' && <BashView scheme={scheme} />}
           {view === 'code' && <CodeView scheme={scheme} />}
