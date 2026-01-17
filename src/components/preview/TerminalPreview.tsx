@@ -318,69 +318,109 @@ export function TerminalPreview({ scheme }: TerminalPreviewProps) {
   const [view, setView] = useState<ViewMode>('bash');
   const bg = rgbToHex(scheme.ui.background);
   const fg = rgbToHex(scheme.ui.foreground);
+  const selectionBg = rgbToHex(scheme.ui.selection);
+  const selectionFg = rgbToHex(scheme.ui.selectionText);
   const accent = '#8b5cf6'; // Linear-style purple gradient
+
+  // Detect if background is light (luminosity > 50%)
+  const bgLuminosity = (scheme.ui.background.r * 0.299 + scheme.ui.background.g * 0.587 + scheme.ui.background.b * 0.114) / 255;
+  const isLightBg = bgLuminosity > 0.5;
+
+  // Generate unique ID for scoped selection styles
+  const terminalId = 'terminal-preview';
+
+  // Different shadows for light vs dark terminal backgrounds
+  const lightBgShadow = `
+    0 0 0 1px rgba(139, 92, 246, 0.2),
+    0 4px 20px rgba(0, 0, 0, 0.1),
+    0 0 40px rgba(139, 92, 246, 0.1)
+  `;
+  const lightBgShadowHover = `
+    0 0 0 1px rgba(139, 92, 246, 0.3),
+    0 8px 30px rgba(0, 0, 0, 0.15),
+    0 0 60px rgba(139, 92, 246, 0.15)
+  `;
+  const darkBgShadow = `
+    0 0 0 1px rgba(139, 92, 246, 0.15),
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(139, 92, 246, 0.2),
+    0 0 100px rgba(139, 92, 246, 0.15),
+    0 0 140px rgba(139, 92, 246, 0.1)
+  `;
+  const darkBgShadowHover = `
+    0 0 0 1px rgba(139, 92, 246, 0.3),
+    0 8px 30px rgba(0, 0, 0, 0.6),
+    0 0 80px rgba(139, 92, 246, 0.35),
+    0 0 120px rgba(139, 92, 246, 0.25),
+    0 0 160px rgba(139, 92, 246, 0.15)
+  `;
+
+  const currentShadow = isLightBg ? lightBgShadow : darkBgShadow;
+  const hoverShadow = isLightBg ? lightBgShadowHover : darkBgShadowHover;
 
   return (
     <Box
+      id={terminalId}
       style={{
         position: 'relative',
         borderRadius: 16,
         overflow: 'hidden',
-        // Outer glow
-        boxShadow: `
-          0 0 0 1px rgba(139, 92, 246, 0.15),
-          0 4px 20px rgba(0, 0, 0, 0.5),
-          0 0 60px rgba(139, 92, 246, 0.2),
-          0 0 100px rgba(139, 92, 246, 0.15),
-          0 0 140px rgba(139, 92, 246, 0.1)
-        `,
+        background: bg,
+        boxShadow: currentShadow,
         transition: 'box-shadow 0.3s ease, transform 0.3s ease',
+        // CSS custom properties for selection colors
+        ['--selection-bg' as string]: selectionBg,
+        ['--selection-fg' as string]: selectionFg,
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = `
-          0 0 0 1px rgba(139, 92, 246, 0.3),
-          0 8px 30px rgba(0, 0, 0, 0.6),
-          0 0 80px rgba(139, 92, 246, 0.35),
-          0 0 120px rgba(139, 92, 246, 0.25),
-          0 0 160px rgba(139, 92, 246, 0.15)
-        `;
+        e.currentTarget.style.boxShadow = hoverShadow;
         e.currentTarget.style.transform = 'translateY(-4px) scale(1.01)';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = `
-          0 0 0 1px rgba(139, 92, 246, 0.15),
-          0 4px 20px rgba(0, 0, 0, 0.5),
-          0 0 60px rgba(139, 92, 246, 0.2),
-          0 0 100px rgba(139, 92, 246, 0.15),
-          0 0 140px rgba(139, 92, 246, 0.1)
-        `;
+        e.currentTarget.style.boxShadow = currentShadow;
         e.currentTarget.style.transform = 'translateY(0) scale(1)';
       }}
     >
-      {/* Scanlines overlay */}
-      <Box
-        style={{
-          position: 'absolute',
-          inset: 0,
-          pointerEvents: 'none',
-          background: `repeating-linear-gradient(
-            0deg,
-            rgba(0, 0, 0, 0.1) 0px,
-            rgba(0, 0, 0, 0.1) 1px,
-            transparent 1px,
-            transparent 2px
-          )`,
-          zIndex: 20,
-          opacity: 0.5,
-        }}
-      />
+      {/* Selection color styles */}
+      <style>{`
+        #${terminalId} ::selection {
+          background-color: ${selectionBg};
+          color: ${selectionFg};
+        }
+        #${terminalId} ::-moz-selection {
+          background-color: ${selectionBg};
+          color: ${selectionFg};
+        }
+      `}</style>
+
+      {/* Scanlines overlay - disabled for light backgrounds */}
+      {!isLightBg && (
+        <Box
+          style={{
+            position: 'absolute',
+            inset: 0,
+            pointerEvents: 'none',
+            background: `repeating-linear-gradient(
+              0deg,
+              rgba(0, 0, 0, 0.1) 0px,
+              rgba(0, 0, 0, 0.1) 1px,
+              transparent 1px,
+              transparent 2px
+            )`,
+            zIndex: 20,
+            opacity: 0.5,
+          }}
+        />
+      )}
 
 
       {/* Title bar */}
       <Box
         style={{
-          background: 'linear-gradient(180deg, rgba(128,128,128,0.15) 0%, rgba(128,128,128,0.05) 100%)',
-          borderBottom: '1px solid var(--border-subtle)',
+          background: isLightBg
+            ? bg
+            : `linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%), ${bg}`,
+          borderBottom: `1px solid rgba(${isLightBg ? '0,0,0,0.08' : '255,255,255,0.1'})`,
           padding: '12px 16px',
           display: 'flex',
           alignItems: 'center',
@@ -392,7 +432,8 @@ export function TerminalPreview({ scheme }: TerminalPreviewProps) {
           size="xs"
           ff="monospace"
           style={{
-            color: 'var(--text-muted)',
+            color: fg,
+            opacity: 0.6,
             letterSpacing: '0.05em',
           }}
         >
@@ -406,7 +447,7 @@ export function TerminalPreview({ scheme }: TerminalPreviewProps) {
         style={{
           background: bg,
           padding: '8px 12px',
-          borderBottom: '1px solid var(--border-subtle)',
+          borderBottom: `1px solid rgba(${isLightBg ? '0,0,0' : '255,255,255'},0.1)`,
         }}
       >
         <Group gap={4}>

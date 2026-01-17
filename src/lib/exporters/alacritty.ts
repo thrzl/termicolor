@@ -1,0 +1,78 @@
+/**
+ * Alacritty terminal color scheme exporter.
+ *
+ * Generates TOML configuration files compatible with the Alacritty terminal emulator.
+ */
+
+import type { ColorScheme } from '@/types/color';
+import { rgbToHex } from '../color/conversion';
+
+/**
+ * Generates Alacritty TOML color configuration content.
+ *
+ * :param scheme: The color scheme to export.
+ * :returns: TOML configuration string for Alacritty colors.
+ */
+export function generateAlacrittyToml(scheme: ColorScheme): string {
+  const { ansi, ui } = scheme;
+
+  const lines: string[] = [
+    '[colors.primary]',
+    `background = '${rgbToHex(ui.background)}'`,
+    `foreground = '${rgbToHex(ui.foreground)}'`,
+    '',
+    '[colors.cursor]',
+    `text = '${rgbToHex(ui.cursorText)}'`,
+    `cursor = '${rgbToHex(ui.cursor)}'`,
+    '',
+    '[colors.selection]',
+    `text = '${rgbToHex(ui.selectionText)}'`,
+    `background = '${rgbToHex(ui.selection)}'`,
+    '',
+    '[colors.normal]',
+    `black = '${rgbToHex(ansi.black)}'`,
+    `red = '${rgbToHex(ansi.red)}'`,
+    `green = '${rgbToHex(ansi.green)}'`,
+    `yellow = '${rgbToHex(ansi.yellow)}'`,
+    `blue = '${rgbToHex(ansi.blue)}'`,
+    `magenta = '${rgbToHex(ansi.magenta)}'`,
+    `cyan = '${rgbToHex(ansi.cyan)}'`,
+    `white = '${rgbToHex(ansi.white)}'`,
+    '',
+    '[colors.bright]',
+    `black = '${rgbToHex(ansi.brightBlack)}'`,
+    `red = '${rgbToHex(ansi.brightRed)}'`,
+    `green = '${rgbToHex(ansi.brightGreen)}'`,
+    `yellow = '${rgbToHex(ansi.brightYellow)}'`,
+    `blue = '${rgbToHex(ansi.brightBlue)}'`,
+    `magenta = '${rgbToHex(ansi.brightMagenta)}'`,
+    `cyan = '${rgbToHex(ansi.brightCyan)}'`,
+    `white = '${rgbToHex(ansi.brightWhite)}'`,
+  ];
+
+  return lines.join('\n');
+}
+
+/**
+ * Downloads an Alacritty color scheme as a TOML file.
+ *
+ * :param scheme: The color scheme to download.
+ * :param filename: Name for the downloaded file (without extension).
+ */
+export function downloadAlacrittyToml(
+  scheme: ColorScheme,
+  filename: string
+): void {
+  const content = generateAlacrittyToml(scheme);
+  const blob = new Blob([content], { type: 'application/toml' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${filename}.toml`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  URL.revokeObjectURL(url);
+}

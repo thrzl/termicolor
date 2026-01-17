@@ -18,6 +18,8 @@ interface UseColorMappingResult {
   scheme: ColorScheme;
   /** Whether dark mode is active. */
   isDarkMode: boolean;
+  /** Whether current scheme was generated in grayscale mode (low color input). */
+  isGrayscale: boolean;
   /** Minimum contrast ratio setting. */
   minContrast: number;
   /** Current readability report. */
@@ -37,7 +39,7 @@ interface UseColorMappingResult {
   /** Set minimum contrast ratio. */
   setMinContrast: (ratio: number) => void;
   /** Auto-fix contrast issues in current scheme. */
-  autoFixContrast: () => void;
+  autoFixContrast: (keepBackground?: boolean) => void;
 }
 
 const DEFAULT_SCHEME: ColorScheme = {
@@ -53,14 +55,16 @@ const DEFAULT_SCHEME: ColorScheme = {
 export function useColorMapping(): UseColorMappingResult {
   const [scheme, setScheme] = useState<ColorScheme>(DEFAULT_SCHEME);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isGrayscale, setIsGrayscale] = useState(false);
   const [minContrast, setMinContrast] = useState<number>(CONTRAST_THRESHOLDS.AA_NORMAL);
 
   // Compute readability report whenever scheme changes
   const readabilityReport = useMemo(() => analyzeReadability(scheme), [scheme]);
 
   const generateScheme = useCallback((colors: ExtractedColor[]) => {
-    const newScheme = createColorScheme(colors, isDarkMode);
-    setScheme(newScheme);
+    const result = createColorScheme(colors, isDarkMode);
+    setScheme(result.scheme);
+    setIsGrayscale(result.isGrayscale);
   }, [isDarkMode]);
 
   const toggleMode = useCallback(() => {
@@ -93,13 +97,14 @@ export function useColorMapping(): UseColorMappingResult {
     setIsDarkMode(true);
   }, []);
 
-  const autoFixContrast = useCallback(() => {
-    setScheme((prev) => ensureReadability(prev, minContrast));
+  const autoFixContrast = useCallback((keepBackground: boolean = false) => {
+    setScheme((prev) => ensureReadability(prev, { minRatio: minContrast, keepBackground }));
   }, [minContrast]);
 
   return {
     scheme,
     isDarkMode,
+    isGrayscale,
     minContrast,
     readabilityReport,
     generateScheme,

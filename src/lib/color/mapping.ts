@@ -76,7 +76,6 @@ export function mapToANSIColors(
 ): Record<ANSIColorName, RGBColor> {
   const result: Record<ANSIColorName, RGBColor> = { ...DEFAULT_ANSI_COLORS };
   const clusters = clusterByLuminosity(colors);
-  const saturatedColors = getSaturatedColors(colors, 25);
   const usedColors = new Set<string>();
 
   // Map black and white from luminosity extremes
@@ -93,13 +92,39 @@ export function mapToANSIColors(
   }
 
   // Map chromatic colors by hue proximity
-  for (const colorName of BASE_ANSI_COLORS) {
-    const targetHue = TARGET_HUES[colorName];
-    const match = findBestHueMatch(saturatedColors, targetHue, usedColors);
+  // Use saturation threshold of 20 and require at least 2 saturated colors
+  const trulySaturatedColors = getSaturatedColors(colors, 20);
+  const hasChromatic = trulySaturatedColors.length >= 2;
 
-    if (match) {
-      result[colorName] = match.rgb;
-      usedColors.add(match.hex);
+  // Calculate grayscale values for fallback
+  const blackL = rgbToHsl(result.black).l;
+  const whiteL = rgbToHsl(result.white).l;
+  const range = Math.max(whiteL - blackL, 20); // Ensure minimum range
+  const grayLevels = [0.25, 0.35, 0.45, 0.55, 0.65, 0.75];
+
+  if (hasChromatic) {
+    for (let i = 0; i < BASE_ANSI_COLORS.length; i++) {
+      const colorName = BASE_ANSI_COLORS[i];
+      const targetHue = TARGET_HUES[colorName];
+      const match = findBestHueMatch(trulySaturatedColors, targetHue, usedColors);
+
+      if (match && match.hsl.s >= 20) {
+        // Only use the match if it has good saturation
+        result[colorName] = match.rgb;
+        usedColors.add(match.hex);
+      } else {
+        // Fall back to grayscale for this slot
+        const targetL = blackL + range * grayLevels[i];
+        const grayValue = Math.round((targetL / 100) * 255);
+        result[colorName] = { r: grayValue, g: grayValue, b: grayValue };
+      }
+    }
+  } else {
+    // Generate full grayscale palette when no chromatic colors available
+    for (let i = 0; i < BASE_ANSI_COLORS.length; i++) {
+      const targetL = blackL + range * grayLevels[i];
+      const grayValue = Math.round((targetL / 100) * 255);
+      result[BASE_ANSI_COLORS[i]] = { r: grayValue, g: grayValue, b: grayValue };
     }
   }
 
@@ -177,20 +202,34 @@ export function mapToUIColors(
   return result;
 }
 
+/** Result of creating a color scheme, with metadata. */
+export interface ColorSchemeResult {
+  scheme: ColorScheme;
+  /** Whether the scheme was generated in grayscale mode due to lack of chromatic colors. */
+  isGrayscale: boolean;
+}
+
 /**
  * Creates a complete color scheme from extracted colors.
  *
  * :param colors: Extracted colors from image.
  * :param darkMode: Whether to use dark mode.
- * :returns: Complete ColorScheme object.
+ * :returns: ColorSchemeResult with scheme and metadata.
  */
 export function createColorScheme(
   colors: ExtractedColor[],
   darkMode: boolean = true
-): ColorScheme {
+): ColorSchemeResult {
+  // Use threshold of 20 for saturation and require 2+ colors for chromatic
+  const saturatedColors = getSaturatedColors(colors, 20);
+  const isGrayscale = saturatedColors.length < 2;
+
   return {
-    ansi: mapToANSIColors(colors),
-    ui: mapToUIColors(colors, darkMode),
+    scheme: {
+      ansi: mapToANSIColors(colors),
+      ui: mapToUIColors(colors, darkMode),
+    },
+    isGrayscale,
   };
 }
 

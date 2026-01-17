@@ -9,6 +9,74 @@ import { rgbToHsl, rgbToHex } from './conversion';
 const colorThief = new ColorThief();
 
 /**
+ * Samples corner pixels from an image to detect background color.
+ *
+ * :param img: HTML image element.
+ * :returns: The most common corner color as RGB, or null if sampling fails.
+ */
+function sampleCornerColor(img: HTMLImageElement): RGBColor | null {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  canvas.width = img.width;
+  canvas.height = img.height;
+  ctx.drawImage(img, 0, 0);
+
+  // Sample corners and edges
+  const samplePoints = [
+    [0, 0], // top-left
+    [img.width - 1, 0], // top-right
+    [0, img.height - 1], // bottom-left
+    [img.width - 1, img.height - 1], // bottom-right
+    [Math.floor(img.width / 2), 0], // top-center
+    [Math.floor(img.width / 2), img.height - 1], // bottom-center
+    [0, Math.floor(img.height / 2)], // left-center
+    [img.width - 1, Math.floor(img.height / 2)], // right-center
+  ];
+
+  const colorCounts = new Map<string, { rgb: RGBColor; count: number }>();
+
+  for (const [x, y] of samplePoints) {
+    const pixel = ctx.getImageData(x, y, 1, 1).data;
+    const rgb: RGBColor = { r: pixel[0], g: pixel[1], b: pixel[2] };
+    // Round to nearest 8 to group similar colors
+    const key = `${Math.round(rgb.r / 8) * 8},${Math.round(rgb.g / 8) * 8},${Math.round(rgb.b / 8) * 8}`;
+
+    const existing = colorCounts.get(key);
+    if (existing) {
+      existing.count++;
+    } else {
+      colorCounts.set(key, { rgb, count: 1 });
+    }
+  }
+
+  // Find the most common corner color (must appear at least 3 times)
+  let maxCount = 0;
+  let dominantColor: RGBColor | null = null;
+
+  for (const { rgb, count } of colorCounts.values()) {
+    if (count > maxCount && count >= 3) {
+      maxCount = count;
+      dominantColor = rgb;
+    }
+  }
+
+  return dominantColor;
+}
+
+/**
+ * Checks if a color is already in the palette (within tolerance).
+ */
+function colorExistsInPalette(color: RGBColor, palette: ExtractedColor[], tolerance: number = 20): boolean {
+  return palette.some(p =>
+    Math.abs(p.rgb.r - color.r) <= tolerance &&
+    Math.abs(p.rgb.g - color.g) <= tolerance &&
+    Math.abs(p.rgb.b - color.b) <= tolerance
+  );
+}
+
+/**
  * Extracts colors from an image element.
  *
  * :param img: HTML image element to extract colors from.
@@ -46,6 +114,19 @@ export async function extractColorsFromImage(
       population: colorCount - index,
     };
   });
+
+  // Sample corner pixels to detect background color that ColorThief might miss
+  const cornerColor = sampleCornerColor(img);
+  if (cornerColor && !colorExistsInPalette(cornerColor, colors)) {
+    const hsl = rgbToHsl(cornerColor);
+    // Add background color with high population (it's likely dominant)
+    colors.unshift({
+      rgb: cornerColor,
+      hsl,
+      hex: rgbToHex(cornerColor),
+      population: colorCount + 1,
+    });
+  }
 
   return colors;
 }

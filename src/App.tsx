@@ -3,12 +3,11 @@
  * Linear-style purple gradient aesthetic.
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Container, Grid, Stack, Title, Text, Button, Group, TextInput, Modal, Tabs, Paper, Box, Menu, UnstyledButton } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import {
-  IconDownload,
   IconDeviceFloppy,
   IconPalette,
   IconHistory,
@@ -16,6 +15,8 @@ import {
   IconMoon,
   IconSun,
   IconChevronDown,
+  IconFileImport,
+  IconBrandGithub,
 } from '@tabler/icons-react';
 import type { FileWithPath } from '@mantine/dropzone';
 
@@ -31,6 +32,9 @@ import { useColorExtraction } from './hooks/useColorExtraction';
 import { useColorMapping } from './hooks/useColorMapping';
 import { useProfiles } from './hooks/useProfiles';
 import { useExport } from './hooks/useExport';
+import { useImport } from './hooks/useImport';
+import { ExportMenu } from './components/export/ExportMenu';
+import type { ExportFormat } from './lib/exporters';
 
 import type { Profile } from './types/profile';
 import type { ExtractedColor } from './types/color';
@@ -48,6 +52,7 @@ export function App() {
   const {
     scheme,
     isDarkMode,
+    isGrayscale,
     minContrast,
     readabilityReport,
     generateScheme,
@@ -60,7 +65,8 @@ export function App() {
     autoFixContrast,
   } = useColorMapping();
   const { profiles, isLoading: isLoadingProfiles, create, remove } = useProfiles();
-  const { downloadScheme } = useExport();
+  const { downloadScheme, formats } = useExport();
+  const { importFromFile, isImporting, importError } = useImport();
 
   // Generate scheme when colors are extracted
   useEffect(() => {
@@ -68,6 +74,18 @@ export function App() {
       generateScheme(colors);
     }
   }, [colors, generateScheme]);
+
+  // Show warning when grayscale mode is triggered
+  useEffect(() => {
+    if (isGrayscale && colors.length > 0) {
+      notifications.show({
+        title: 'Low Color Image',
+        message: 'This image has few saturated colors. A grayscale palette has been generated.',
+        color: 'yellow',
+        autoClose: 5000,
+      });
+    }
+  }, [isGrayscale, colors.length]);
 
   // Handle image drop
   const handleImageDrop = useCallback((files: FileWithPath[]) => {
@@ -162,19 +180,52 @@ export function App() {
     });
   }, [downloadScheme]);
 
-  // Handle export current
-  const handleExportCurrent = useCallback(() => {
+  // Handle export current with format selection
+  const handleExportCurrent = useCallback((format: ExportFormat = 'iterm') => {
     const name = profileName.trim() || 'termicolor-scheme';
-    downloadScheme(scheme, name);
+    const formatInfo = formats.find(f => f.id === format);
+    downloadScheme(scheme, name, format);
     notifications.show({
       title: 'Downloaded',
-      message: `Exported "${name}.itermcolors"`,
+      message: `Exported "${name}.${formatInfo?.extension || 'itermcolors'}"`,
       color: 'green',
     });
-  }, [scheme, profileName, downloadScheme]);
+  }, [scheme, profileName, downloadScheme, formats]);
+
+  // Handle import .itermcolors file
+  const handleImportFile = useCallback(async (file: File) => {
+    const imported = await importFromFile(file);
+    if (imported) {
+      setScheme(imported);
+      notifications.show({
+        title: 'Imported',
+        message: `Loaded color scheme from "${file.name}"`,
+        color: 'green',
+      });
+    } else if (importError) {
+      notifications.show({
+        title: 'Import Failed',
+        message: importError,
+        color: 'red',
+      });
+    }
+  }, [importFromFile, importError, setScheme]);
 
   // Handle color select from palette
   const [selectedColor, setSelectedColor] = useState<ExtractedColor | null>(null);
+
+  // File input ref for import
+  const importInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle import file input change
+  const handleImportInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleImportFile(file);
+      // Reset input so same file can be re-imported
+      e.target.value = '';
+    }
+  }, [handleImportFile]);
 
   return (
     <AppShell>
@@ -360,11 +411,35 @@ export function App() {
 
               <Tabs.Panel value="create">
                 <Stack gap="lg">
+                  {/* Hidden file input for import */}
+                  <input
+                    type="file"
+                    ref={importInputRef}
+                    onChange={handleImportInputChange}
+                    accept=".itermcolors"
+                    style={{ display: 'none' }}
+                  />
+
                   {/* Image upload/preview */}
                   {imageUrl ? (
                     <ImagePreview src={imageUrl} onClear={handleClear} />
                   ) : (
-                    <ImageDropzone onDrop={handleImageDrop} loading={isExtracting} />
+                    <Stack gap="sm">
+                      <ImageDropzone onDrop={handleImageDrop} loading={isExtracting} />
+                      <Button
+                        variant="subtle"
+                        size="xs"
+                        leftSection={<IconFileImport size={14} />}
+                        onClick={() => importInputRef.current?.click()}
+                        loading={isImporting}
+                        style={{
+                          color: 'var(--text-secondary)',
+                          alignSelf: 'center',
+                        }}
+                      >
+                        or import .itermcolors file
+                      </Button>
+                    </Stack>
                   )}
 
                   {/* Extracted palette */}
@@ -400,18 +475,7 @@ export function App() {
                         >
                           Save
                         </Button>
-                        <Button
-                          variant="outline"
-                          leftSection={<IconDownload size={16} />}
-                          onClick={handleExportCurrent}
-                          size="sm"
-                          style={{
-                            borderColor: 'rgba(139, 92, 246, 0.3)',
-                            color: '#8b5cf6',
-                          }}
-                        >
-                          Export
-                        </Button>
+                        <ExportMenu onExport={handleExportCurrent} />
                       </Group>
                     </Paper>
                   )}
@@ -453,6 +517,43 @@ export function App() {
         </Grid>
       </Container>
 
+      {/* Footer */}
+      <Box
+        component="footer"
+        style={{
+          textAlign: 'center',
+          padding: '40px 20px 24px',
+          marginTop: 40,
+        }}
+      >
+        <Group justify="center" gap="xs">
+          <Text
+            size="xs"
+            style={{
+              color: 'var(--text-tertiary)',
+              fontFamily: '"Space Grotesk", sans-serif',
+            }}
+          >
+            made by <span style={{ color: '#8b5cf6', fontWeight: 500 }}>haai</span>
+          </Text>
+          <a
+            href="https://github.com/WouterDurnez"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: 'var(--text-tertiary)',
+              display: 'flex',
+              alignItems: 'center',
+              transition: 'color 0.2s ease',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#8b5cf6'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-tertiary)'}
+          >
+            <IconBrandGithub size={16} />
+          </a>
+        </Group>
+      </Box>
+
       {/* Save Profile Modal */}
       <Modal
         opened={saveModalOpened}
@@ -466,9 +567,9 @@ export function App() {
         radius="lg"
         styles={{
           content: {
-            background: 'rgba(18, 19, 24, 0.95)',
+            background: 'var(--bg-card)',
             backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(139, 92, 246, 0.15)',
+            border: '1px solid var(--border-subtle)',
           },
           header: {
             background: 'transparent',
@@ -488,8 +589,8 @@ export function App() {
                 color: 'var(--text-secondary)',
               },
               input: {
-                background: 'rgba(10, 10, 12, 0.8)',
-                borderColor: 'rgba(139, 92, 246, 0.2)',
+                background: 'var(--bg-input)',
+                borderColor: 'var(--border-subtle)',
                 color: 'var(--text-primary)',
                 '&::placeholder': {
                   color: 'var(--text-tertiary)',

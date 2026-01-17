@@ -66,8 +66,18 @@ export function ANSIColorGrid({
               leftSection={<IconRefresh size={14} />}
               onClick={onRegenerate}
               disabled={!canRegenerate}
-              style={{
-                color: canRegenerate ? '#8b5cf6' : 'var(--text-tertiary)',
+              styles={{
+                root: {
+                  background: canRegenerate ? 'rgba(139, 92, 246, 0.1)' : 'transparent',
+                  border: canRegenerate ? '1px solid rgba(139, 92, 246, 0.3)' : '1px solid var(--border-subtle)',
+                  color: canRegenerate ? '#8b5cf6' : 'var(--text-tertiary)',
+                  fontWeight: 500,
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    background: canRegenerate ? 'rgba(139, 92, 246, 0.2)' : 'transparent',
+                    border: canRegenerate ? '1px solid rgba(139, 92, 246, 0.5)' : '1px solid var(--border-subtle)',
+                  },
+                },
               }}
             >
               Regenerate

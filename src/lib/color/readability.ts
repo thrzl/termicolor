@@ -210,19 +210,33 @@ export function analyzeReadability(scheme: ColorScheme): ReadabilityReport {
   };
 }
 
+/** Options for the ensureReadability function. */
+export interface EnsureReadabilityOptions {
+  /** Minimum contrast ratio to achieve. */
+  minRatio?: number;
+  /** If true, keep the background color fixed and only adjust foreground colors. */
+  keepBackground?: boolean;
+}
+
 /**
  * Adjusts a color scheme to ensure all colors meet minimum contrast.
  * Uses a smart strategy: considers adjusting background if it would
- * reduce overall changes needed.
+ * reduce overall changes needed (unless keepBackground is true).
  *
  * :param scheme: Color scheme to adjust.
- * :param minRatio: Minimum contrast ratio.
+ * :param options: Options for the adjustment (minRatio, keepBackground).
  * :returns: Adjusted color scheme.
  */
 export function ensureReadability(
   scheme: ColorScheme,
-  minRatio: number = CONTRAST_THRESHOLDS.AA_NORMAL
+  options: EnsureReadabilityOptions | number = CONTRAST_THRESHOLDS.AA_NORMAL
 ): ColorScheme {
+  // Support legacy signature: ensureReadability(scheme, minRatio)
+  const opts: EnsureReadabilityOptions =
+    typeof options === 'number' ? { minRatio: options } : options;
+  const minRatio = opts.minRatio ?? CONTRAST_THRESHOLDS.AA_NORMAL;
+  const keepBackground = opts.keepBackground ?? false;
+
   const adjustedUi = { ...scheme.ui };
   let background = scheme.ui.background;
 
@@ -238,8 +252,8 @@ export function ensureReadability(
     (c) => getContrastRatio(c, background) < minRatio
   );
 
-  // If more than half fail, try adjusting the background first
-  if (failingColors.length > fgColors.length * 0.4) {
+  // If more than half fail, try adjusting the background first (unless keepBackground)
+  if (!keepBackground && failingColors.length > fgColors.length * 0.4) {
     const bgHsl = rgbToHsl(background);
     const isLightBg = bgHsl.l > 50;
 

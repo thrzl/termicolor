@@ -4,7 +4,7 @@
  */
 
 import { useState } from 'react';
-import { ColorPicker, Popover, Stack, Text, UnstyledButton, Box, Group } from '@mantine/core';
+import { ColorPicker, Popover, Stack, Text, UnstyledButton, Box, Group, TextInput } from '@mantine/core';
 import type { RGBColor } from '@/types/color';
 import { rgbToHex, hexToRgb } from '@/lib/color/conversion';
 import type { ContrastInfo } from '@/lib/color/readability';
@@ -31,10 +31,32 @@ export function ColorSlotEditor({
 }: ColorSlotEditorProps) {
   const [opened, setOpened] = useState(false);
   const hex = rgbToHex(color);
+  const [hexInput, setHexInput] = useState(hex);
 
   const handleChange = (value: string) => {
+    setHexInput(value);
     onChange(hexToRgb(value));
   };
+
+  const handleHexInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.currentTarget.value;
+    setHexInput(value);
+
+    // Normalize: add # if missing
+    if (value && !value.startsWith('#')) {
+      value = '#' + value;
+    }
+
+    // Validate hex format and apply
+    if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+      onChange(hexToRgb(value));
+    }
+  };
+
+  // Sync hexInput when color changes externally
+  if (hex !== hexInput && /^#[0-9A-Fa-f]{6}$/.test(hex)) {
+    setHexInput(hex);
+  }
 
   return (
     <Popover opened={opened} onChange={setOpened} position="bottom" withArrow shadow="md">
@@ -109,6 +131,18 @@ export function ColorSlotEditor({
             value={hex}
             onChange={handleChange}
             size="md"
+          />
+          <TextInput
+            value={hexInput}
+            onChange={handleHexInputChange}
+            placeholder="#000000"
+            size="xs"
+            styles={{
+              input: {
+                fontFamily: 'monospace',
+                textAlign: 'center',
+              },
+            }}
           />
         </Stack>
       </Popover.Dropdown>

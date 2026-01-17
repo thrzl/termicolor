@@ -96,3 +96,34 @@ export const UI_COLOR_ORDER: UIColorName[] = [
   'selectionText',
   'badge',
 ];
+
+/** Reverse mapping from iTerm2 plist keys to ANSI color names. */
+export const PLIST_TO_ANSI: Record<string, ANSIColorName> = {
+  'Ansi 0 Color': 'black',
+  'Ansi 1 Color': 'red',
+  'Ansi 2 Color': 'green',
+  'Ansi 3 Color': 'yellow',
+  'Ansi 4 Color': 'blue',
+  'Ansi 5 Color': 'magenta',
+  'Ansi 6 Color': 'cyan',
+  'Ansi 7 Color': 'white',
+  'Ansi 8 Color': 'brightBlack',
+  'Ansi 9 Color': 'brightRed',
+  'Ansi 10 Color': 'brightGreen',
+  'Ansi 11 Color': 'brightYellow',
+  'Ansi 12 Color': 'brightBlue',
+  'Ansi 13 Color': 'brightMagenta',
+  'Ansi 14 Color': 'brightCyan',
+  'Ansi 15 Color': 'brightWhite',
+};
+
+/** Reverse mapping from iTerm2 plist keys to UI color names. */
+export const PLIST_TO_UI: Record<string, UIColorName> = {
+  'Background Color': 'background',
+  'Foreground Color': 'foreground',
+  'Cursor Color': 'cursor',
+  'Cursor Text Color': 'cursorText',
+  'Selection Color': 'selection',
+  'Selected Text Color': 'selectionText',
+  'Badge Color': 'badge',
+};

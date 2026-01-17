@@ -11,11 +11,12 @@ import {
   Stack,
   Badge,
   Tooltip,
-  ActionIcon,
   Slider,
   Box,
+  Menu,
+  UnstyledButton,
 } from '@mantine/core';
-import { IconEye, IconWand } from '@tabler/icons-react';
+import { IconEye, IconWand, IconLock, IconAdjustments } from '@tabler/icons-react';
 import type { ReadabilityReport } from '@/lib/color/readability';
 import { CONTRAST_THRESHOLDS } from '@/lib/color/readability';
 
@@ -23,7 +24,7 @@ interface ReadabilityScoreProps {
   report: ReadabilityReport;
   minContrast: number;
   onMinContrastChange: (value: number) => void;
-  onAutoFix?: () => void;
+  onAutoFix?: (keepBackground?: boolean) => void;
 }
 
 /**
@@ -123,19 +124,75 @@ export function ReadabilityScore({
           </Group>
 
           {onAutoFix && needsFix && (
-            <Tooltip label={`Auto-fix ${report.total - meetingThreshold} colors below ${minContrast.toFixed(1)}:1`}>
-              <ActionIcon
-                size="lg"
-                radius="md"
-                onClick={onAutoFix}
-                style={{
-                  background: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%)',
-                  boxShadow: '0 0 15px rgba(139, 92, 246, 0.3)',
-                }}
-              >
-                <IconWand size={18} color="#000" />
-              </ActionIcon>
-            </Tooltip>
+            <Menu
+              position="bottom-end"
+              withArrow
+              shadow="lg"
+              styles={{
+                dropdown: {
+                  background: 'var(--bg-card)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid var(--border-subtle)',
+                },
+                item: {
+                  transition: 'background 0.15s ease',
+                  '&[data-hovered]': {
+                    background: 'rgba(139, 92, 246, 0.15)',
+                  },
+                },
+                arrow: {
+                  borderColor: 'var(--border-subtle)',
+                  background: 'var(--bg-card)',
+                },
+              }}
+            >
+              <Menu.Target>
+                <Tooltip label={`Auto-fix ${report.total - meetingThreshold} colors below ${minContrast.toFixed(1)}:1`}>
+                  <UnstyledButton
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 8,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      background: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%)',
+                      boxShadow: '0 0 15px rgba(139, 92, 246, 0.3)',
+                    }}
+                  >
+                    <IconWand size={18} color="#000" />
+                  </UnstyledButton>
+                </Tooltip>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  leftSection={<IconAdjustments size={14} style={{ color: '#8b5cf6' }} />}
+                  onClick={() => onAutoFix(false)}
+                  style={{
+                    color: 'var(--text-primary)',
+                    fontFamily: '"Space Grotesk", sans-serif',
+                  }}
+                >
+                  <Stack gap={2}>
+                    <Text size="sm" fw={500}>Smart fix</Text>
+                    <Text size="xs" c="dimmed">May adjust background if needed</Text>
+                  </Stack>
+                </Menu.Item>
+                <Menu.Item
+                  leftSection={<IconLock size={14} style={{ color: '#f59e0b' }} />}
+                  onClick={() => onAutoFix(true)}
+                  style={{
+                    color: 'var(--text-primary)',
+                    fontFamily: '"Space Grotesk", sans-serif',
+                  }}
+                >
+                  <Stack gap={2}>
+                    <Text size="sm" fw={500}>Keep background</Text>
+                    <Text size="xs" c="dimmed">Only adjust foreground colors</Text>
+                  </Stack>
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
           )}
         </Group>
 
