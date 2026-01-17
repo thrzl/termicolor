@@ -320,10 +320,10 @@ export function App() {
                 mb="lg"
                 grow
                 style={{
-                  background: 'rgba(18, 19, 24, 0.8)',
+                  background: 'var(--bg-card)',
                   padding: 4,
                   borderRadius: 10,
-                  border: '1px solid rgba(139, 92, 246, 0.1)',
+                  border: '1px solid var(--border-subtle)',
                   backdropFilter: 'blur(10px)',
                 }}
               >
