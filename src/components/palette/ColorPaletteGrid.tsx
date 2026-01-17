@@ -1,6 +1,6 @@
 /**
  * Grid display of extracted color palette.
- * Phosphor Terminal aesthetic.
+ * Linear-style purple gradient aesthetic.
  */
 
 import { SimpleGrid, Text, Paper, Stack, Group, Badge } from '@mantine/core';

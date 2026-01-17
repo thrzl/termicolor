@@ -20,10 +20,11 @@ const swatchStyle = (hex: string, size: number, selected: boolean, clickable: bo
   backgroundColor: hex,
   borderRadius: 'var(--mantine-radius-sm)',
   border: selected
-    ? '2px solid var(--mantine-color-blue-5)'
+    ? '2px solid #8b5cf6'
     : '1px solid var(--mantine-color-default-border)',
   cursor: clickable ? 'pointer' : 'default',
-  transition: 'transform 0.1s ease',
+  transition: 'all 0.2s ease',
+  boxShadow: selected ? '0 0 0 3px rgba(139, 92, 246, 0.2)' : 'none',
 });
 
 /**
@@ -40,13 +41,17 @@ export function ColorSwatch({
 
   const handleMouseOver = (e: React.MouseEvent) => {
     if (onClick) {
-      (e.currentTarget as HTMLElement).style.transform = 'scale(1.1)';
+      const element = e.currentTarget as HTMLElement;
+      element.style.transform = 'scale(1.1)';
+      element.style.boxShadow = '0 0 20px rgba(139, 92, 246, 0.4), 0 0 0 3px rgba(139, 92, 246, 0.2)';
     }
   };
 
   const handleMouseOut = (e: React.MouseEvent) => {
     if (onClick) {
-      (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
+      const element = e.currentTarget as HTMLElement;
+      element.style.transform = 'scale(1)';
+      element.style.boxShadow = selected ? '0 0 0 3px rgba(139, 92, 246, 0.2)' : 'none';
     }
   };
 

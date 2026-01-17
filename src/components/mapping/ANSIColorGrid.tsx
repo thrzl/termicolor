@@ -1,6 +1,6 @@
 /**
  * Responsive grid of ANSI colors for editing with contrast info.
- * Phosphor Terminal aesthetic with compact vertical slots.
+ * Linear-style purple gradient aesthetic with compact vertical slots.
  */
 
 import { SimpleGrid, Paper, Text, Stack, Group, Badge, Button } from '@mantine/core';
@@ -42,7 +42,7 @@ export function ANSIColorGrid({
       <Stack gap="sm">
         <Group justify="space-between" align="center">
           <Group gap="xs">
-            <IconTerminal size={16} style={{ color: '#39ff14' }} />
+            <IconTerminal size={16} style={{ color: '#8b5cf6' }} />
             <Text fw={600} size="sm" style={{ color: 'var(--text-secondary)' }}>
               ANSI Colors
             </Text>
@@ -50,9 +50,9 @@ export function ANSIColorGrid({
               variant="light"
               size="xs"
               style={{
-                background: 'rgba(57, 255, 20, 0.1)',
-                color: '#39ff14',
-                border: '1px solid rgba(57, 255, 20, 0.2)',
+                background: 'rgba(139, 92, 246, 0.1)',
+                color: '#8b5cf6',
+                border: '1px solid rgba(139, 92, 246, 0.2)',
               }}
             >
               16
@@ -66,7 +66,7 @@ export function ANSIColorGrid({
               onClick={onRegenerate}
               disabled={!canRegenerate}
               style={{
-                color: canRegenerate ? '#39ff14' : 'var(--text-tertiary)',
+                color: canRegenerate ? '#8b5cf6' : 'var(--text-tertiary)',
               }}
             >
               Regenerate

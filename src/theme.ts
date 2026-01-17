@@ -1,61 +1,61 @@
 /**
  * Mantine theme configuration for Termicolor.
- * Phosphor Terminal aesthetic - dark, glowing, cyberpunk.
+ * Linear-style purple gradient aesthetic - dark, modern, elegant.
  */
 
 import { createTheme, rem, MantineColorsTuple } from '@mantine/core';
 
-// Phosphor green palette
-const phosphor: MantineColorsTuple = [
-  '#e8fff0',
-  '#d0ffe0',
-  '#a3ffc2',
-  '#6eff99',
-  '#39ff14', // Main phosphor green
-  '#2eb810',
-  '#259a0d',
-  '#1c7d0a',
-  '#146008',
-  '#0d4305',
+// Purple gradient palette
+const purple: MantineColorsTuple = [
+  '#f3e8ff',
+  '#e9d5ff',
+  '#d8b4fe',
+  '#c084fc',
+  '#a78bfa', // violet-400
+  '#8b5cf6', // Main violet-500
+  '#7c3aed',
+  '#6d28d9',
+  '#5b21b6',
+  '#4c1d95',
 ];
 
-// Amber accent palette
-const amber: MantineColorsTuple = [
-  '#fff8e6',
-  '#ffefcc',
-  '#ffe099',
-  '#ffd066',
-  '#ffb000', // Main amber
-  '#cc8c00',
-  '#996900',
-  '#664600',
-  '#4d3500',
-  '#332300',
+// Orange accent palette
+const orange: MantineColorsTuple = [
+  '#fff7ed',
+  '#ffedd5',
+  '#fed7aa',
+  '#fdba74',
+  '#fb923c',
+  '#f97316', // Main orange-500
+  '#ea580c',
+  '#c2410c',
+  '#9a3412',
+  '#7c2d12',
 ];
 
 // Dark surface palette
 const dark: MantineColorsTuple = [
-  '#e8e8ea',
-  '#c8c8cc',
-  '#888899',
-  '#555566',
-  '#333344',
-  '#1a1b23', // Elevated surface
-  '#121318', // Surface
-  '#0d0d10',
-  '#0a0a0c', // Deep background
-  '#050506',
+  '#f1f5f9', // slate-100
+  '#cbd5e1',
+  '#94a3b8', // slate-400
+  '#64748b', // slate-500
+  '#475569',
+  '#334155',
+  '#1e293b',
+  '#12121a', // Surface
+  '#0a0a0f', // Deep background
+  '#050508',
 ];
 
 export const theme = createTheme({
-  primaryColor: 'phosphor',
+  primaryColor: 'purple',
   colors: {
-    phosphor,
-    amber,
+    purple,
+    orange,
     dark,
   },
-  black: '#0a0a0c',
-  white: '#e8e8e8',
+  black: '#0a0a0f',
+  white: '#f1f5f9',
   fontFamily: '"Space Grotesk", system-ui, -apple-system, sans-serif',
   fontFamilyMonospace: '"JetBrains Mono", ui-monospace, "SF Mono", Menlo, Monaco, monospace',
   headings: {
@@ -67,12 +67,12 @@ export const theme = createTheme({
   components: {
     Paper: {
       defaultProps: {
-        bg: 'rgba(26, 27, 35, 0.6)',
+        bg: 'rgba(18, 18, 30, 0.6)',
       },
       styles: {
         root: {
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.06)',
+          border: '1px solid rgba(139, 92, 246, 0.1)',
         },
       },
     },
@@ -129,10 +129,10 @@ export const theme = createTheme({
     TextInput: {
       styles: {
         input: {
-          backgroundColor: 'rgba(18, 19, 24, 0.8)',
-          borderColor: 'rgba(255, 255, 255, 0.1)',
+          backgroundColor: 'rgba(18, 18, 30, 0.8)',
+          borderColor: 'rgba(139, 92, 246, 0.1)',
           '&:focus': {
-            borderColor: 'rgba(57, 255, 20, 0.5)',
+            borderColor: 'rgba(139, 92, 246, 0.5)',
           },
         },
       },
@@ -140,9 +140,9 @@ export const theme = createTheme({
     Modal: {
       styles: {
         content: {
-          backgroundColor: 'rgba(26, 27, 35, 0.95)',
+          backgroundColor: 'rgba(18, 18, 30, 0.95)',
           backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(57, 255, 20, 0.1)',
+          border: '1px solid rgba(139, 92, 246, 0.1)',
         },
         header: {
           backgroundColor: 'transparent',
@@ -152,15 +152,15 @@ export const theme = createTheme({
     Slider: {
       styles: {
         track: {
-          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          backgroundColor: 'rgba(139, 92, 246, 0.1)',
         },
         bar: {
-          backgroundColor: '#39ff14',
+          backgroundColor: '#8b5cf6',
         },
         thumb: {
-          backgroundColor: '#39ff14',
-          borderColor: '#39ff14',
-          boxShadow: '0 0 10px rgba(57, 255, 20, 0.5)',
+          backgroundColor: '#8b5cf6',
+          borderColor: '#8b5cf6',
+          boxShadow: '0 0 10px rgba(139, 92, 246, 0.5)',
         },
       },
     },

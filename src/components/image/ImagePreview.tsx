@@ -1,6 +1,6 @@
 /**
  * Image preview component showing the uploaded image.
- * Phosphor Terminal aesthetic.
+ * Linear-style purple gradient aesthetic.
  */
 
 import { Image, Paper, CloseButton, Box, Group } from '@mantine/core';

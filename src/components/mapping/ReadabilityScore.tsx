@@ -1,6 +1,6 @@
 /**
  * Readability score indicator component.
- * Phosphor Terminal aesthetic.
+ * Linear-style purple gradient aesthetic.
  */
 
 import {
@@ -80,9 +80,9 @@ export function ReadabilityScore({
       p="md"
       radius="md"
       style={{
-        background: 'linear-gradient(135deg, rgba(57, 255, 20, 0.03) 0%, rgba(255, 176, 0, 0.02) 100%)',
+        background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.03) 0%, rgba(124, 58, 237, 0.02) 100%)',
         backdropFilter: 'blur(10px)',
-        border: '1px solid rgba(57, 255, 20, 0.1)',
+        border: '1px solid rgba(139, 92, 246, 0.1)',
       }}
     >
       <Stack gap="md">
@@ -101,7 +101,7 @@ export function ReadabilityScore({
             />
             <Stack gap={4}>
               <Group gap="xs">
-                <IconEye size={16} style={{ color: '#39ff14' }} />
+                <IconEye size={16} style={{ color: '#8b5cf6' }} />
                 <Text fw={600}>Readability Score</Text>
                 <Badge color={color} variant="light" size="sm" radius="sm">
                   {label}
@@ -129,8 +129,8 @@ export function ReadabilityScore({
                 radius="md"
                 onClick={onAutoFix}
                 style={{
-                  background: 'linear-gradient(135deg, #2eb810 0%, #39ff14 100%)',
-                  boxShadow: '0 0 15px rgba(57, 255, 20, 0.3)',
+                  background: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%)',
+                  boxShadow: '0 0 15px rgba(139, 92, 246, 0.3)',
                 }}
               >
                 <IconWand size={18} color="#000" />
@@ -150,9 +150,9 @@ export function ReadabilityScore({
               size="sm"
               radius="sm"
               style={{
-                background: 'rgba(57, 255, 20, 0.1)',
-                color: '#39ff14',
-                border: '1px solid rgba(57, 255, 20, 0.2)',
+                background: 'rgba(139, 92, 246, 0.1)',
+                color: '#8b5cf6',
+                border: '1px solid rgba(139, 92, 246, 0.2)',
               }}
             >
               {minContrast.toFixed(1)}:1
@@ -169,15 +169,15 @@ export function ReadabilityScore({
                 backgroundColor: 'rgba(255, 255, 255, 0.1)',
               },
               bar: {
-                backgroundColor: '#39ff14',
+                backgroundColor: '#8b5cf6',
               },
               thumb: {
-                backgroundColor: '#39ff14',
-                borderColor: '#39ff14',
-                boxShadow: '0 0 10px rgba(57, 255, 20, 0.5)',
+                backgroundColor: '#8b5cf6',
+                borderColor: '#8b5cf6',
+                boxShadow: '0 0 10px rgba(139, 92, 246, 0.5)',
               },
               mark: {
-                borderColor: 'rgba(57, 255, 20, 0.3)',
+                borderColor: 'rgba(139, 92, 246, 0.3)',
               },
               markLabel: {
                 color: 'var(--text-muted)',

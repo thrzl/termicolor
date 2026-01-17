@@ -1,6 +1,6 @@
 /**
  * Main application component.
- * Phosphor Terminal aesthetic.
+ * Linear-style purple gradient aesthetic.
  */
 
 import { useState, useCallback, useEffect } from 'react';
@@ -186,7 +186,7 @@ export function App() {
       <Box
         style={{
           position: 'relative',
-          borderBottom: '1px solid rgba(57, 255, 20, 0.1)',
+          borderBottom: '1px solid rgba(139, 92, 246, 0.1)',
           marginBottom: 32,
           paddingTop: 32,
           paddingBottom: 32,
@@ -201,7 +201,7 @@ export function App() {
             transform: 'translate(-50%, -50%)',
             width: '60%',
             height: '200%',
-            background: 'radial-gradient(ellipse at center, rgba(57, 255, 20, 0.08) 0%, transparent 70%)',
+            background: 'radial-gradient(ellipse at center, rgba(139, 92, 246, 0.08) 0%, transparent 70%)',
             pointerEvents: 'none',
           }}
         />
@@ -213,19 +213,25 @@ export function App() {
                   width: 56,
                   height: 56,
                   borderRadius: 12,
-                  background: 'linear-gradient(135deg, #39ff14 0%, #2eb810 100%)',
+                  background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  boxShadow: '0 0 30px rgba(57, 255, 20, 0.4), 0 0 60px rgba(57, 255, 20, 0.2)',
+                  boxShadow: '0 0 30px rgba(139, 92, 246, 0.4), 0 0 60px rgba(139, 92, 246, 0.2)',
                 }}
               >
-                <IconTerminal2 size={28} stroke={2} color="#000" />
+                <IconTerminal2 size={28} stroke={2} color="#fff" />
               </Box>
               <Title
                 order={1}
                 className="hero-title"
-                style={{ fontSize: '2.5rem' }}
+                style={{
+                  fontSize: '2.5rem',
+                  background: 'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
               >
                 Termicolor
               </Title>
@@ -248,11 +254,11 @@ export function App() {
                   dropdown: {
                     background: 'rgba(18, 19, 24, 0.95)',
                     backdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(57, 255, 20, 0.3)',
+                    border: '1px solid rgba(139, 92, 246, 0.3)',
                   },
                   item: {
                     '&[data-hovered]': {
-                      background: 'rgba(57, 255, 20, 0.15)',
+                      background: 'rgba(139, 92, 246, 0.15)',
                     },
                   },
                 }}
@@ -265,13 +271,13 @@ export function App() {
                       gap: 4,
                       padding: '2px 8px',
                       borderRadius: 4,
-                      background: 'rgba(57, 255, 20, 0.1)',
-                      border: '1px solid rgba(57, 255, 20, 0.4)',
-                      color: '#39ff14',
+                      background: 'rgba(139, 92, 246, 0.1)',
+                      border: '1px solid rgba(139, 92, 246, 0.4)',
+                      color: '#8b5cf6',
                       fontWeight: 600,
                       fontFamily: '"Space Grotesk", sans-serif',
                       fontSize: 'inherit',
-                      boxShadow: '0 0 10px rgba(57, 255, 20, 0.15)',
+                      boxShadow: '0 0 10px rgba(139, 92, 246, 0.15)',
                       transition: 'all 0.2s ease',
                       verticalAlign: 'baseline',
                     }}
@@ -282,10 +288,10 @@ export function App() {
                 </Menu.Target>
                 <Menu.Dropdown>
                   <Menu.Item
-                    leftSection={<IconMoon size={14} style={{ color: '#39ff14' }} />}
+                    leftSection={<IconMoon size={14} style={{ color: '#8b5cf6' }} />}
                     onClick={() => !isDarkMode && toggleMode()}
                     style={{
-                      color: isDarkMode ? '#39ff14' : 'var(--text-secondary)',
+                      color: isDarkMode ? '#8b5cf6' : 'var(--text-secondary)',
                       fontWeight: isDarkMode ? 600 : 400,
                     }}
                   >
@@ -321,7 +327,7 @@ export function App() {
                   background: 'rgba(18, 19, 24, 0.8)',
                   padding: 4,
                   borderRadius: 10,
-                  border: '1px solid rgba(57, 255, 20, 0.1)',
+                  border: '1px solid rgba(139, 92, 246, 0.1)',
                   backdropFilter: 'blur(10px)',
                 }}
               >
@@ -381,7 +387,7 @@ export function App() {
                       radius="lg"
                       className="glass-card"
                       style={{
-                        border: '1px solid rgba(57, 255, 20, 0.15)',
+                        border: '1px solid rgba(139, 92, 246, 0.15)',
                       }}
                     >
                       <Group grow>
@@ -391,8 +397,8 @@ export function App() {
                           size="sm"
                           className="phosphor-btn"
                           style={{
-                            background: 'linear-gradient(135deg, #2eb810 0%, #39ff14 100%)',
-                            color: '#000',
+                            background: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%)',
+                            color: '#fff',
                             fontWeight: 600,
                           }}
                         >
@@ -404,8 +410,8 @@ export function App() {
                           onClick={handleExportCurrent}
                           size="sm"
                           style={{
-                            borderColor: 'rgba(57, 255, 20, 0.3)',
-                            color: '#39ff14',
+                            borderColor: 'rgba(139, 92, 246, 0.3)',
+                            color: '#8b5cf6',
                           }}
                         >
                           Export
@@ -457,7 +463,7 @@ export function App() {
         onClose={closeSaveModal}
         title={
           <Group gap="xs">
-            <IconDeviceFloppy size={20} style={{ color: '#39ff14' }} />
+            <IconDeviceFloppy size={20} style={{ color: '#8b5cf6' }} />
             <Text fw={600}>Save Profile</Text>
           </Group>
         }
@@ -466,7 +472,7 @@ export function App() {
           content: {
             background: 'rgba(18, 19, 24, 0.95)',
             backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(57, 255, 20, 0.15)',
+            border: '1px solid rgba(139, 92, 246, 0.15)',
           },
           header: {
             background: 'transparent',
@@ -487,13 +493,13 @@ export function App() {
               },
               input: {
                 background: 'rgba(10, 10, 12, 0.8)',
-                borderColor: 'rgba(57, 255, 20, 0.2)',
+                borderColor: 'rgba(139, 92, 246, 0.2)',
                 color: 'var(--text-primary)',
                 '&::placeholder': {
                   color: 'var(--text-tertiary)',
                 },
                 '&:focus': {
-                  borderColor: 'rgba(57, 255, 20, 0.5)',
+                  borderColor: 'rgba(139, 92, 246, 0.5)',
                 },
               },
             }}
@@ -510,8 +516,8 @@ export function App() {
               onClick={handleSaveProfile}
               className="phosphor-btn"
               style={{
-                background: 'linear-gradient(135deg, #2eb810 0%, #39ff14 100%)',
-                color: '#000',
+                background: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%)',
+                color: '#fff',
                 fontWeight: 600,
               }}
             >

@@ -1,35 +1,35 @@
 /**
- * Termicolor - Phosphor Terminal Aesthetic
- * A dark, glowing, CRT-inspired design
+ * Termicolor - Linear-Style Purple Gradient Aesthetic
+ * A dark, modern design with purple gradient accents
  */
 
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Phosphor colors */
-  --phosphor-green: #39ff14;
-  --phosphor-green-dim: #2eb810;
-  --phosphor-amber: #ffb000;
-  --phosphor-cyan: #00ffff;
+  /* Linear-style purple gradient colors */
+  --primary-accent: #8b5cf6;
+  --secondary-accent: #a78bfa;
+  --tertiary-accent: #d946ef;
+  --orange-accent: #f97316;
 
   /* Dark theme base */
-  --bg-deep: #0a0a0c;
-  --bg-surface: #121318;
-  --bg-elevated: #1a1b23;
-  --bg-card: rgba(26, 27, 35, 0.8);
+  --bg-deep: #0a0a0f;
+  --bg-surface: #12121a;
+  --bg-elevated: #12121a;
+  --bg-card: rgba(18, 18, 30, 0.6);
 
   /* Text */
-  --text-primary: #e8e8e8;
-  --text-secondary: #888899;
-  --text-muted: #555566;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
 
   /* Borders */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-glow: rgba(57, 255, 20, 0.3);
+  --border-subtle: rgba(139, 92, 246, 0.1);
+  --border-glow: rgba(139, 92, 246, 0.3);
 
   /* Glow effects */
-  --glow-green: 0 0 20px rgba(57, 255, 20, 0.4), 0 0 40px rgba(57, 255, 20, 0.2), 0 0 60px rgba(57, 255, 20, 0.1);
-  --glow-amber: 0 0 20px rgba(255, 176, 0, 0.4), 0 0 40px rgba(255, 176, 0, 0.2);
+  --glow-purple: 0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(139, 92, 246, 0.2), 0 0 60px rgba(139, 92, 246, 0.1);
+  --glow-gradient: 0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(217, 70, 239, 0.2);
 }
 
 /* Base styles */
@@ -48,8 +48,8 @@ body {
   position: fixed;
   inset: 0;
   background-image:
-    linear-gradient(rgba(57, 255, 20, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(57, 255, 20, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
   background-size: 50px 50px;
   pointer-events: none;
   z-index: 0;
@@ -86,20 +86,20 @@ body {
   border-radius: 16px;
   background: var(--bg-elevated);
   box-shadow:
-    0 0 0 1px rgba(57, 255, 20, 0.1),
+    0 0 0 1px rgba(139, 92, 246, 0.1),
     0 4px 30px rgba(0, 0, 0, 0.5),
-    0 0 60px rgba(57, 255, 20, 0.15),
-    0 0 100px rgba(57, 255, 20, 0.1),
+    0 0 60px rgba(139, 92, 246, 0.15),
+    0 0 100px rgba(139, 92, 246, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .terminal-glow:hover {
   box-shadow:
-    0 0 0 1px rgba(57, 255, 20, 0.2),
+    0 0 0 1px rgba(139, 92, 246, 0.2),
     0 8px 40px rgba(0, 0, 0, 0.6),
-    0 0 80px rgba(57, 255, 20, 0.25),
-    0 0 120px rgba(57, 255, 20, 0.15),
+    0 0 80px rgba(139, 92, 246, 0.25),
+    0 0 120px rgba(139, 92, 246, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   transform: translateY(-2px);
 }
@@ -132,10 +132,10 @@ body {
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
   }
   50% {
-    box-shadow: 0 0 30px rgba(57, 255, 20, 0.5), 0 0 60px rgba(57, 255, 20, 0.2);
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.5), 0 0 60px rgba(139, 92, 246, 0.2);
   }
 }
 
@@ -150,34 +150,34 @@ body {
 
 /* Glass card effect */
 .glass-card {
-  background: rgba(26, 27, 35, 0.6);
+  background: rgba(18, 18, 30, 0.6);
   backdrop-filter: blur(10px);
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
 }
 
-/* Phosphor button */
+/* Purple gradient button */
 .phosphor-btn {
-  background: linear-gradient(135deg, var(--phosphor-green-dim) 0%, var(--phosphor-green) 100%);
-  color: #000;
+  background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 50%, #f97316 100%);
+  color: #fff;
   font-weight: 600;
   border: none;
   padding: 10px 20px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
 }
 
 .phosphor-btn:hover {
-  box-shadow: 0 0 30px rgba(57, 255, 20, 0.5), 0 0 60px rgba(57, 255, 20, 0.2);
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.5), 0 0 60px rgba(139, 92, 246, 0.2);
   transform: translateY(-1px);
 }
 
 /* Accent text */
 .text-glow {
-  color: var(--phosphor-green);
-  text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+  color: var(--primary-accent);
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
 }
 
 /* Hero title effect */
@@ -186,26 +186,26 @@ body {
   font-weight: 700;
   font-size: 3rem;
   letter-spacing: -0.02em;
-  background: linear-gradient(135deg, var(--phosphor-green) 0%, var(--phosphor-cyan) 50%, var(--phosphor-amber) 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 50%, #f97316 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-shadow: none;
-  filter: drop-shadow(0 0 30px rgba(57, 255, 20, 0.3));
+  filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.3));
 }
 
 /* Dropzone styling */
 .dropzone-phosphor {
-  background: linear-gradient(135deg, rgba(57, 255, 20, 0.03) 0%, rgba(255, 176, 0, 0.02) 100%);
-  border: 2px dashed rgba(57, 255, 20, 0.3);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.03) 0%, rgba(217, 70, 239, 0.02) 100%);
+  border: 2px dashed rgba(139, 92, 246, 0.3);
   border-radius: 16px;
   transition: all 0.3s ease;
 }
 
 .dropzone-phosphor:hover {
-  border-color: rgba(57, 255, 20, 0.6);
-  background: linear-gradient(135deg, rgba(57, 255, 20, 0.08) 0%, rgba(255, 176, 0, 0.04) 100%);
-  box-shadow: 0 0 40px rgba(57, 255, 20, 0.1);
+  border-color: rgba(139, 92, 246, 0.6);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(217, 70, 239, 0.04) 100%);
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.1);
 }
 
 /* Custom scrollbar */
@@ -225,7 +225,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(57, 255, 20, 0.3);
+  background: rgba(139, 92, 246, 0.3);
 }
 
 /* Override Mantine defaults for dark theme */
@@ -253,10 +253,10 @@ body {
   padding: 1px;
   background: linear-gradient(
     90deg,
-    var(--phosphor-green),
-    var(--phosphor-cyan),
-    var(--phosphor-amber),
-    var(--phosphor-green)
+    #8b5cf6,
+    #d946ef,
+    #f97316,
+    #8b5cf6
   );
   background-size: 300% 100%;
   animation: gradient-shift 8s linear infinite;

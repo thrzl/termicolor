@@ -1,6 +1,6 @@
 /**
  * Main application shell layout.
- * Phosphor Terminal aesthetic - minimal wrapper with floating icons.
+ * Linear-style purple gradient aesthetic - minimal wrapper with floating icons.
  */
 
 import { Box, ActionIcon, Tooltip, Group } from '@mantine/core';
@@ -48,8 +48,8 @@ export function AppShell({ children }: AppShellProps) {
               transition: 'all 0.2s ease',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(57, 255, 20, 0.3)';
-              e.currentTarget.style.color = '#39ff14';
+              e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.3)';
+              e.currentTarget.style.color = '#8b5cf6';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)';

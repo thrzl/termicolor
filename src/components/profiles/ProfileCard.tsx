@@ -1,6 +1,6 @@
 /**
  * Profile card component for displaying saved profiles.
- * Phosphor Terminal aesthetic.
+ * Linear-style purple gradient aesthetic.
  */
 
 import { Card, Image, Text, Group, ActionIcon, Stack, Tooltip, Box } from '@mantine/core';
@@ -42,8 +42,8 @@ export function ProfileCard({ profile, onLoad, onDelete, onExport }: ProfileCard
         transition: 'all 0.2s ease',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = 'rgba(57, 255, 20, 0.3)';
-        e.currentTarget.style.boxShadow = '0 0 20px rgba(57, 255, 20, 0.1)';
+        e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.3)';
+        e.currentTarget.style.boxShadow = '0 0 20px rgba(139, 92, 246, 0.1)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)';
@@ -99,7 +99,7 @@ export function ProfileCard({ profile, onLoad, onDelete, onExport }: ProfileCard
               variant="subtle"
               size="sm"
               onClick={onLoad}
-              style={{ color: '#39ff14' }}
+              style={{ color: '#8b5cf6' }}
             >
               <IconEdit size={16} />
             </ActionIcon>

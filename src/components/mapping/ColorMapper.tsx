@@ -1,6 +1,6 @@
 /**
  * Main color mapping component combining ANSI and UI color editors.
- * Phosphor Terminal aesthetic.
+ * Linear-style purple gradient aesthetic.
  */
 
 import { Stack, SimpleGrid, Paper, Text, Group } from '@mantine/core';
@@ -81,7 +81,7 @@ export function ColorMapper({
       >
         <Stack gap="sm">
           <Group gap="xs">
-            <IconBrush size={16} style={{ color: '#39ff14' }} />
+            <IconBrush size={16} style={{ color: '#8b5cf6' }} />
             <Text fw={600} size="sm" style={{ color: 'var(--text-secondary)' }}>
               UI Colors
             </Text>

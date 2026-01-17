@@ -1,6 +1,6 @@
 /**
  * Image dropzone component for uploading images.
- * Phosphor Terminal aesthetic.
+ * Linear-style purple gradient aesthetic.
  */
 
 import { useRef } from 'react';
@@ -15,7 +15,7 @@ interface ImageDropzoneProps {
 }
 
 /**
- * Dropzone for image file uploads with phosphor glow effects.
+ * Dropzone for image file uploads with purple glow effects.
  */
 export function ImageDropzone({ onDrop, loading = false, disabled = false }: ImageDropzoneProps) {
   const openRef = useRef<() => void>(null);
@@ -36,18 +36,18 @@ export function ImageDropzone({ onDrop, loading = false, disabled = false }: Ima
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, rgba(57, 255, 20, 0.03) 0%, rgba(255, 176, 0, 0.02) 100%)',
-          border: '2px dashed rgba(57, 255, 20, 0.25)',
+          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.03) 0%, rgba(124, 58, 237, 0.02) 100%)',
+          border: '2px dashed rgba(139, 92, 246, 0.25)',
           transition: 'all 0.3s ease',
           '&:hover': {
-            borderColor: 'rgba(57, 255, 20, 0.5)',
-            background: 'linear-gradient(135deg, rgba(57, 255, 20, 0.06) 0%, rgba(255, 176, 0, 0.03) 100%)',
-            boxShadow: '0 0 30px rgba(57, 255, 20, 0.1), inset 0 0 30px rgba(57, 255, 20, 0.03)',
+            borderColor: 'rgba(139, 92, 246, 0.5)',
+            background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.06) 0%, rgba(124, 58, 237, 0.03) 100%)',
+            boxShadow: '0 0 30px rgba(139, 92, 246, 0.1), inset 0 0 30px rgba(139, 92, 246, 0.03)',
           },
           '&[data-accept]': {
-            borderColor: '#39ff14',
-            background: 'linear-gradient(135deg, rgba(57, 255, 20, 0.1) 0%, rgba(255, 176, 0, 0.05) 100%)',
-            boxShadow: '0 0 40px rgba(57, 255, 20, 0.2), inset 0 0 40px rgba(57, 255, 20, 0.05)',
+            borderColor: '#8b5cf6',
+            background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(124, 58, 237, 0.05) 100%)',
+            boxShadow: '0 0 40px rgba(139, 92, 246, 0.2), inset 0 0 40px rgba(139, 92, 246, 0.05)',
           },
           '&[data-reject]': {
             borderColor: '#ff5f57',
@@ -64,13 +64,13 @@ export function ImageDropzone({ onDrop, loading = false, disabled = false }: Ima
               width: 72,
               height: 72,
               borderRadius: 16,
-              background: 'linear-gradient(135deg, #39ff14 0%, #2eb810 100%)',
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               margin: '0 auto',
               marginBottom: 16,
-              boxShadow: '0 0 30px rgba(57, 255, 20, 0.5), 0 0 60px rgba(57, 255, 20, 0.3)',
+              boxShadow: '0 0 30px rgba(139, 92, 246, 0.5), 0 0 60px rgba(139, 92, 246, 0.3)',
             }}
           >
             <IconUpload size={36} stroke={1.5} color="#000" />
@@ -101,8 +101,8 @@ export function ImageDropzone({ onDrop, loading = false, disabled = false }: Ima
               width: 72,
               height: 72,
               borderRadius: 16,
-              background: 'rgba(57, 255, 20, 0.08)',
-              border: '2px solid rgba(57, 255, 20, 0.2)',
+              background: 'rgba(139, 92, 246, 0.08)',
+              border: '2px solid rgba(139, 92, 246, 0.2)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -111,7 +111,7 @@ export function ImageDropzone({ onDrop, loading = false, disabled = false }: Ima
               transition: 'all 0.3s ease',
             }}
           >
-            <IconPhoto size={36} stroke={1.5} style={{ color: '#39ff14', opacity: 0.7 }} />
+            <IconPhoto size={36} stroke={1.5} style={{ color: '#8b5cf6', opacity: 0.7 }} />
           </Box>
         </Dropzone.Idle>
 
@@ -142,11 +142,11 @@ export function ImageDropzone({ onDrop, loading = false, disabled = false }: Ima
                 size="xs"
                 style={{
                   padding: '4px 10px',
-                  background: 'rgba(57, 255, 20, 0.08)',
-                  border: '1px solid rgba(57, 255, 20, 0.15)',
+                  background: 'rgba(139, 92, 246, 0.08)',
+                  border: '1px solid rgba(139, 92, 246, 0.15)',
                   borderRadius: 6,
                   fontFamily: '"JetBrains Mono", monospace',
-                  color: '#39ff14',
+                  color: '#8b5cf6',
                   fontSize: 10,
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',

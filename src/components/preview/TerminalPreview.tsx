@@ -318,7 +318,7 @@ export function TerminalPreview({ scheme }: TerminalPreviewProps) {
   const [view, setView] = useState<ViewMode>('bash');
   const bg = rgbToHex(scheme.ui.background);
   const fg = rgbToHex(scheme.ui.foreground);
-  const accent = rgbToHex(scheme.ansi.green);
+  const accent = '#8b5cf6'; // Linear-style purple gradient
 
   return (
     <Box
@@ -328,31 +328,31 @@ export function TerminalPreview({ scheme }: TerminalPreviewProps) {
         overflow: 'hidden',
         // Outer glow
         boxShadow: `
-          0 0 0 1px rgba(57, 255, 20, 0.15),
+          0 0 0 1px rgba(139, 92, 246, 0.15),
           0 4px 20px rgba(0, 0, 0, 0.5),
-          0 0 60px rgba(57, 255, 20, 0.2),
-          0 0 100px rgba(57, 255, 20, 0.15),
-          0 0 140px rgba(57, 255, 20, 0.1)
+          0 0 60px rgba(139, 92, 246, 0.2),
+          0 0 100px rgba(139, 92, 246, 0.15),
+          0 0 140px rgba(139, 92, 246, 0.1)
         `,
         transition: 'box-shadow 0.3s ease, transform 0.3s ease',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = `
-          0 0 0 1px rgba(57, 255, 20, 0.3),
+          0 0 0 1px rgba(139, 92, 246, 0.3),
           0 8px 30px rgba(0, 0, 0, 0.6),
-          0 0 80px rgba(57, 255, 20, 0.35),
-          0 0 120px rgba(57, 255, 20, 0.25),
-          0 0 160px rgba(57, 255, 20, 0.15)
+          0 0 80px rgba(139, 92, 246, 0.35),
+          0 0 120px rgba(139, 92, 246, 0.25),
+          0 0 160px rgba(139, 92, 246, 0.15)
         `;
         e.currentTarget.style.transform = 'translateY(-4px) scale(1.01)';
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.boxShadow = `
-          0 0 0 1px rgba(57, 255, 20, 0.15),
+          0 0 0 1px rgba(139, 92, 246, 0.15),
           0 4px 20px rgba(0, 0, 0, 0.5),
-          0 0 60px rgba(57, 255, 20, 0.2),
-          0 0 100px rgba(57, 255, 20, 0.15),
-          0 0 140px rgba(57, 255, 20, 0.1)
+          0 0 60px rgba(139, 92, 246, 0.2),
+          0 0 100px rgba(139, 92, 246, 0.15),
+          0 0 140px rgba(139, 92, 246, 0.1)
         `;
         e.currentTarget.style.transform = 'translateY(0) scale(1)';
       }}

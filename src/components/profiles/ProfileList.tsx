@@ -1,6 +1,6 @@
 /**
  * Profile list/gallery component.
- * Phosphor Terminal aesthetic.
+ * Linear-style purple gradient aesthetic.
  */
 
 import { SimpleGrid, Paper, Text, Stack, Loader, Center } from '@mantine/core';
@@ -28,7 +28,7 @@ export function ProfileList({
   if (isLoading) {
     return (
       <Center py="xl">
-        <Loader color="#39ff14" />
+        <Loader color="#8b5cf6" />
       </Center>
     );
   }
@@ -41,7 +41,7 @@ export function ProfileList({
         style={{
           background: 'rgba(26, 27, 35, 0.6)',
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(57, 255, 20, 0.1)',
+          border: '1px solid rgba(139, 92, 246, 0.1)',
         }}
       >
         <Text ta="center" style={{ color: 'var(--text-secondary)' }}>
