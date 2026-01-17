@@ -1,10 +1,10 @@
 /**
- * 4x4 grid of ANSI colors for editing with contrast info.
- * Phosphor Terminal aesthetic.
+ * Responsive grid of ANSI colors for editing with contrast info.
+ * Phosphor Terminal aesthetic with compact vertical slots.
  */
 
-import { SimpleGrid, Paper, Text, Stack, Group, Badge } from '@mantine/core';
-import { IconTerminal } from '@tabler/icons-react';
+import { SimpleGrid, Paper, Text, Stack, Group, Badge, Button } from '@mantine/core';
+import { IconTerminal, IconRefresh } from '@tabler/icons-react';
 import type { ANSIColorName, RGBColor } from '@/types/color';
 import { ANSI_COLOR_ORDER, ANSI_DISPLAY_NAMES } from '@/lib/iterm/schema';
 import type { ContrastInfo } from '@/lib/color/readability';
@@ -14,12 +14,21 @@ interface ANSIColorGridProps {
   colors: Record<ANSIColorName, RGBColor>;
   onChange: (name: ANSIColorName, color: RGBColor) => void;
   contrastInfo?: Record<ANSIColorName, ContrastInfo>;
+  onRegenerate?: () => void;
+  canRegenerate?: boolean;
 }
 
 /**
- * 4x4 editable grid of ANSI terminal colors with contrast badges.
+ * Responsive editable grid of ANSI terminal colors with contrast badges.
+ * 8 columns on sm+ for 2 rows of 16 colors, 4 on mobile for 4 rows.
  */
-export function ANSIColorGrid({ colors, onChange, contrastInfo }: ANSIColorGridProps) {
+export function ANSIColorGrid({
+  colors,
+  onChange,
+  contrastInfo,
+  onRegenerate,
+  canRegenerate = false,
+}: ANSIColorGridProps) {
   return (
     <Paper
       p="md"
@@ -37,20 +46,34 @@ export function ANSIColorGrid({ colors, onChange, contrastInfo }: ANSIColorGridP
             <Text fw={600} size="sm" style={{ color: 'var(--text-secondary)' }}>
               ANSI Colors
             </Text>
+            <Badge
+              variant="light"
+              size="xs"
+              style={{
+                background: 'rgba(57, 255, 20, 0.1)',
+                color: '#39ff14',
+                border: '1px solid rgba(57, 255, 20, 0.2)',
+              }}
+            >
+              16
+            </Badge>
           </Group>
-          <Badge
-            variant="light"
-            size="xs"
-            style={{
-              background: 'rgba(57, 255, 20, 0.1)',
-              color: '#39ff14',
-              border: '1px solid rgba(57, 255, 20, 0.2)',
-            }}
-          >
-            16 colors
-          </Badge>
+          {onRegenerate && (
+            <Button
+              variant="subtle"
+              size="xs"
+              leftSection={<IconRefresh size={14} />}
+              onClick={onRegenerate}
+              disabled={!canRegenerate}
+              style={{
+                color: canRegenerate ? '#39ff14' : 'var(--text-tertiary)',
+              }}
+            >
+              Regenerate
+            </Button>
+          )}
         </Group>
-        <SimpleGrid cols={4} spacing="xs">
+        <SimpleGrid cols={{ base: 4, sm: 8 }} spacing={4} verticalSpacing="xs">
           {ANSI_COLOR_ORDER.map((name) => (
             <ColorSlotEditor
               key={name}

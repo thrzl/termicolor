@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { Container, Grid, Stack, Title, Text, Button, Group, TextInput, Modal, Tabs, Paper, Box } from '@mantine/core';
+import { Container, Grid, Stack, Title, Text, Button, Group, TextInput, Modal, Tabs, Paper, Box, Menu, UnstyledButton } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import {
@@ -13,6 +13,9 @@ import {
   IconPalette,
   IconHistory,
   IconTerminal2,
+  IconMoon,
+  IconSun,
+  IconChevronDown,
 } from '@tabler/icons-react';
 import type { FileWithPath } from '@mantine/dropzone';
 
@@ -236,8 +239,82 @@ export function App() {
                 fontFamily: '"Space Grotesk", sans-serif',
               }}
             >
-              Transform any image into a beautiful iTerm2 color scheme.
-              Upload, customize, and export in seconds.
+              Create a{' '}
+              <Menu
+                position="bottom"
+                withArrow
+                shadow="lg"
+                styles={{
+                  dropdown: {
+                    background: 'rgba(18, 19, 24, 0.95)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(57, 255, 20, 0.3)',
+                  },
+                  item: {
+                    '&[data-hovered]': {
+                      background: 'rgba(57, 255, 20, 0.15)',
+                    },
+                  },
+                }}
+              >
+                <Menu.Target>
+                  <UnstyledButton
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4,
+                      padding: '4px 12px',
+                      borderRadius: 6,
+                      background: 'rgba(57, 255, 20, 0.1)',
+                      border: '1px solid rgba(57, 255, 20, 0.4)',
+                      color: '#39ff14',
+                      fontWeight: 700,
+                      fontFamily: '"Space Mono", monospace',
+                      fontSize: '1.125rem',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      boxShadow: '0 0 15px rgba(57, 255, 20, 0.2)',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {isDarkMode ? (
+                      <>
+                        <IconMoon size={16} />
+                        Dark
+                      </>
+                    ) : (
+                      <>
+                        <IconSun size={16} />
+                        Light
+                      </>
+                    )}
+                    <IconChevronDown size={14} />
+                  </UnstyledButton>
+                </Menu.Target>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    leftSection={<IconMoon size={16} style={{ color: '#39ff14' }} />}
+                    onClick={() => !isDarkMode && toggleMode()}
+                    style={{
+                      color: isDarkMode ? '#39ff14' : 'var(--text-secondary)',
+                      fontWeight: isDarkMode ? 600 : 400,
+                    }}
+                  >
+                    Dark Mode
+                  </Menu.Item>
+                  <Menu.Item
+                    leftSection={<IconSun size={16} style={{ color: '#ffaa00' }} />}
+                    onClick={() => isDarkMode && toggleMode()}
+                    style={{
+                      color: !isDarkMode ? '#ffaa00' : 'var(--text-secondary)',
+                      fontWeight: !isDarkMode ? 600 : 400,
+                    }}
+                  >
+                    Light Mode
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
+              {' '}terminal theme from any image.
             </Text>
           </Stack>
         </Container>
@@ -288,7 +365,7 @@ export function App() {
           <Tabs.Panel value="create">
             <Grid gutter="xl">
               {/* Left column: Image and Palette */}
-              <Grid.Col span={{ base: 12, md: 5 }}>
+              <Grid.Col span={{ base: 12, md: 4 }}>
                 <Stack gap="lg">
                   {/* Image upload/preview */}
                   {imageUrl ? (
@@ -354,7 +431,7 @@ export function App() {
               </Grid.Col>
 
               {/* Right column: Color Mapping and Preview */}
-              <Grid.Col span={{ base: 12, md: 7 }}>
+              <Grid.Col span={{ base: 12, md: 8 }}>
                 <Stack gap="lg">
                   {/* Terminal Preview */}
                   <TerminalPreview scheme={scheme} />
@@ -363,12 +440,10 @@ export function App() {
                   <ColorMapper
                     scheme={scheme}
                     extractedColors={colors}
-                    isDarkMode={isDarkMode}
                     minContrast={minContrast}
                     readabilityReport={readabilityReport}
                     onANSIColorChange={setANSIColor}
                     onUIColorChange={setUIColor}
-                    onToggleMode={toggleMode}
                     onRegenerate={handleRegenerate}
                     onMinContrastChange={setMinContrast}
                     onAutoFix={autoFixContrast}

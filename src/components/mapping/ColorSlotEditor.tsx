@@ -1,5 +1,6 @@
 /**
  * Editor for a single color slot with color picker.
+ * Compact vertical layout: label on top, swatch in middle, hex below.
  */
 
 import { useState } from 'react';
@@ -19,12 +20,13 @@ interface ColorSlotEditorProps {
 
 /**
  * Editable color slot with popover color picker and optional contrast badge.
+ * Vertically stacked layout for compact grid display.
  */
 export function ColorSlotEditor({
   label,
   color,
   onChange,
-  size = 36,
+  size = 32,
   contrastInfo,
 }: ColorSlotEditorProps) {
   const [opened, setOpened] = useState(false);
@@ -37,29 +39,68 @@ export function ColorSlotEditor({
   return (
     <Popover opened={opened} onChange={setOpened} position="bottom" withArrow shadow="md">
       <Popover.Target>
-        <UnstyledButton onClick={() => setOpened((o) => !o)}>
-          <Group gap="xs">
+        <UnstyledButton
+          onClick={() => setOpened((o) => !o)}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 4,
+            padding: '6px 4px',
+            borderRadius: 'var(--mantine-radius-sm)',
+            transition: 'background 0.15s ease',
+            minWidth: 60,
+          }}
+          styles={{
+            root: {
+              '&:hover': {
+                background: 'rgba(255, 255, 255, 0.05)',
+              },
+            },
+          }}
+        >
+          <Text
+            size="10px"
+            fw={500}
+            ta="center"
+            style={{
+              color: 'var(--text-secondary)',
+              lineHeight: 1.2,
+              maxWidth: 56,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {label}
+          </Text>
+          <Box style={{ position: 'relative' }}>
             <Box
               style={{
                 width: size,
                 height: size,
                 backgroundColor: hex,
                 borderRadius: 'var(--mantine-radius-sm)',
-                border: '1px solid var(--mantine-color-default-border)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: `0 0 8px ${hex}40`,
               }}
             />
-            <Stack gap={0}>
-              <Group gap={4}>
-                <Text size="xs" fw={500}>
-                  {label}
-                </Text>
-                {contrastInfo && <ContrastBadge info={contrastInfo} compact />}
-              </Group>
-              <Text size="xs" c="dimmed" ff="monospace">
-                {hex}
-              </Text>
-            </Stack>
-          </Group>
+            {contrastInfo && (
+              <Box style={{ position: 'absolute', top: -4, right: -4 }}>
+                <ContrastBadge info={contrastInfo} compact />
+              </Box>
+            )}
+          </Box>
+          <Text
+            size="9px"
+            ff="monospace"
+            style={{
+              color: 'var(--text-tertiary)',
+              opacity: 0.7,
+            }}
+          >
+            {hex}
+          </Text>
         </UnstyledButton>
       </Popover.Target>
       <Popover.Dropdown>
