@@ -71,7 +71,7 @@ export function AppShell({ children }: AppShellProps) {
             variant="subtle"
             size="lg"
             component="a"
-            href="https://github.com"
+            href="https://github.com/WouterDurnez"
             target="_blank"
             radius="md"
             style={iconButtonStyle}
