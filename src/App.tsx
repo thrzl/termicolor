@@ -178,10 +178,6 @@ export function App() {
 
   return (
     <AppShell>
-      {/* Background effects */}
-      <div className="grid-bg" />
-      <div className="noise-overlay" />
-
       {/* Hero Header */}
       <Box
         style={{
