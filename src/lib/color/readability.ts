@@ -212,6 +212,8 @@ export function analyzeReadability(scheme: ColorScheme): ReadabilityReport {
 
 /**
  * Adjusts a color scheme to ensure all colors meet minimum contrast.
+ * Uses a smart strategy: considers adjusting background if it would
+ * reduce overall changes needed.
  *
  * :param scheme: Color scheme to adjust.
  * :param minRatio: Minimum contrast ratio.
@@ -221,11 +223,58 @@ export function ensureReadability(
   scheme: ColorScheme,
   minRatio: number = CONTRAST_THRESHOLDS.AA_NORMAL
 ): ColorScheme {
-  const background = scheme.ui.background;
-  const adjustedAnsi = { ...scheme.ansi };
   const adjustedUi = { ...scheme.ui };
+  let background = scheme.ui.background;
 
-  // Adjust all ANSI colors
+  // Collect all foreground colors that need to contrast with background
+  const fgColors = [
+    ...Object.values(scheme.ansi),
+    scheme.ui.foreground,
+    scheme.ui.cursor,
+  ];
+
+  // Count how many colors fail contrast
+  const failingColors = fgColors.filter(
+    (c) => getContrastRatio(c, background) < minRatio
+  );
+
+  // If more than half fail, try adjusting the background first
+  if (failingColors.length > fgColors.length * 0.4) {
+    const bgHsl = rgbToHsl(background);
+    const isLightBg = bgHsl.l > 50;
+
+    // Try small background adjustments to improve overall contrast
+    let bestBackground = background;
+    let bestFailCount = failingColors.length;
+
+    // Try adjusting background luminosity in small steps
+    for (let step = 1; step <= 10; step++) {
+      // Try darkening (for dark themes) or lightening (for light themes)
+      const adjustment = isLightBg ? step * 3 : -step * 3;
+      const testBg = adjustLuminosity(background, adjustment);
+
+      // Count how many would still fail
+      const stillFailing = fgColors.filter(
+        (c) => getContrastRatio(c, testBg) < minRatio
+      ).length;
+
+      if (stillFailing < bestFailCount) {
+        bestFailCount = stillFailing;
+        bestBackground = testBg;
+      }
+
+      // If we fixed most issues, stop
+      if (stillFailing <= 2) break;
+    }
+
+    // Use the improved background
+    background = bestBackground;
+    adjustedUi.background = background;
+  }
+
+  // Now adjust remaining foreground colors as needed
+  const adjustedAnsi = { ...scheme.ansi };
+
   for (const [name, color] of Object.entries(scheme.ansi)) {
     adjustedAnsi[name as ANSIColorName] = adjustForContrast(color, background, minRatio);
   }
