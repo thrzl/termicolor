@@ -4,7 +4,8 @@
  */
 
 import { Box, ActionIcon, Tooltip, Group } from '@mantine/core';
-import { IconBrandGithub } from '@tabler/icons-react';
+import { IconBrandGithub, IconSun, IconMoon } from '@tabler/icons-react';
+import { useAppTheme } from '@/hooks/useAppTheme';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -14,6 +15,26 @@ interface AppShellProps {
  * Main layout wrapper - minimal shell with floating top-right icons.
  */
 export function AppShell({ children }: AppShellProps) {
+  const { isDark, toggleTheme } = useAppTheme();
+
+  const iconButtonStyle = {
+    background: isDark ? 'rgba(26, 27, 35, 0.8)' : 'rgba(255, 255, 255, 0.8)',
+    backdropFilter: 'blur(10px)',
+    border: `1px solid ${isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)'}`,
+    color: 'var(--text-secondary)',
+    transition: 'all 0.2s ease',
+  };
+
+  const handleMouseEnter = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
+    e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.3)';
+    e.currentTarget.style.color = '#8b5cf6';
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
+    e.currentTarget.style.borderColor = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)';
+    e.currentTarget.style.color = 'var(--text-secondary)';
+  };
+
   return (
     <Box
       style={{
@@ -32,6 +53,19 @@ export function AppShell({ children }: AppShellProps) {
           zIndex: 100,
         }}
       >
+        <Tooltip label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}>
+          <ActionIcon
+            variant="subtle"
+            size="lg"
+            radius="md"
+            onClick={toggleTheme}
+            style={iconButtonStyle}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {isDark ? <IconSun size={18} /> : <IconMoon size={18} />}
+          </ActionIcon>
+        </Tooltip>
         <Tooltip label="View on GitHub">
           <ActionIcon
             variant="subtle"
@@ -40,21 +74,9 @@ export function AppShell({ children }: AppShellProps) {
             href="https://github.com"
             target="_blank"
             radius="md"
-            style={{
-              background: 'rgba(26, 27, 35, 0.8)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-              color: 'var(--text-secondary)',
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.3)';
-              e.currentTarget.style.color = '#8b5cf6';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)';
-              e.currentTarget.style.color = 'var(--text-secondary)';
-            }}
+            style={iconButtonStyle}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
             <IconBrandGithub size={18} />
           </ActionIcon>

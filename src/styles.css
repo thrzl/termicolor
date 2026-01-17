@@ -6,30 +6,54 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Linear-style purple gradient colors */
+  /* Linear-style purple gradient colors (shared) */
   --primary-accent: #8b5cf6;
   --secondary-accent: #a78bfa;
   --tertiary-accent: #d946ef;
   --orange-accent: #f97316;
+}
 
-  /* Dark theme base */
+/* Dark theme (default) */
+:root,
+[data-theme="dark"] {
   --bg-deep: #0a0a0f;
   --bg-surface: #12121a;
-  --bg-elevated: #12121a;
+  --bg-elevated: #1a1a24;
   --bg-card: rgba(18, 18, 30, 0.6);
 
-  /* Text */
   --text-primary: #f1f5f9;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
 
-  /* Borders */
   --border-subtle: rgba(139, 92, 246, 0.1);
   --border-glow: rgba(139, 92, 246, 0.3);
 
-  /* Glow effects */
   --glow-purple: 0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(139, 92, 246, 0.2), 0 0 60px rgba(139, 92, 246, 0.1);
   --glow-gradient: 0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(217, 70, 239, 0.2);
+
+  --shadow-card: 0 4px 30px rgba(0, 0, 0, 0.5);
+  --shadow-elevated: 0 8px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --bg-deep: #f8f9fc;
+  --bg-surface: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.8);
+
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+
+  --border-subtle: rgba(139, 92, 246, 0.15);
+  --border-glow: rgba(139, 92, 246, 0.4);
+
+  --glow-purple: 0 0 20px rgba(139, 92, 246, 0.2), 0 0 40px rgba(139, 92, 246, 0.1);
+  --glow-gradient: 0 0 20px rgba(139, 92, 246, 0.2), 0 0 40px rgba(217, 70, 239, 0.1);
+
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-elevated: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
 /* Base styles */
@@ -65,21 +89,17 @@ body {
   border-radius: 16px;
   background: var(--bg-elevated);
   box-shadow:
-    0 0 0 1px rgba(139, 92, 246, 0.1),
-    0 4px 30px rgba(0, 0, 0, 0.5),
-    0 0 60px rgba(139, 92, 246, 0.15),
-    0 0 100px rgba(139, 92, 246, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 0 0 1px var(--border-subtle),
+    var(--shadow-card),
+    var(--glow-purple);
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .terminal-glow:hover {
   box-shadow:
-    0 0 0 1px rgba(139, 92, 246, 0.2),
-    0 8px 40px rgba(0, 0, 0, 0.6),
-    0 0 80px rgba(139, 92, 246, 0.25),
-    0 0 120px rgba(139, 92, 246, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 0 0 1px var(--border-glow),
+    var(--shadow-elevated),
+    var(--glow-purple);
   transform: translateY(-2px);
 }
 
@@ -129,10 +149,11 @@ body {
 
 /* Glass card effect */
 .glass-card {
-  background: rgba(18, 18, 30, 0.6);
+  background: var(--bg-card);
   backdrop-filter: blur(10px);
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
+  box-shadow: var(--shadow-card);
 }
 
 /* Purple gradient button */
@@ -207,10 +228,36 @@ body {
   background: rgba(139, 92, 246, 0.3);
 }
 
-/* Override Mantine defaults for dark theme */
+/* Override Mantine defaults */
 .mantine-Paper-root {
   background: var(--bg-card) !important;
   border-color: var(--border-subtle) !important;
+}
+
+/* Light theme specific overrides */
+[data-theme="light"] .terminal-glow {
+  box-shadow:
+    0 0 0 1px var(--border-subtle),
+    var(--shadow-card);
+}
+
+[data-theme="light"] .terminal-glow:hover {
+  box-shadow:
+    0 0 0 1px var(--border-glow),
+    var(--shadow-elevated),
+    0 0 40px rgba(139, 92, 246, 0.15);
+}
+
+[data-theme="light"] .hero-title {
+  filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.2));
+}
+
+[data-theme="light"] .accent-btn {
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+[data-theme="light"] .accent-btn:hover {
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
 }
 
 /* Subtle animated gradient for special elements */
