@@ -57,9 +57,14 @@ export function useColorMapping(): UseColorMappingResult {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [isGrayscale, setIsGrayscale] = useState(false);
   const [minContrast, setMinContrast] = useState<number>(CONTRAST_THRESHOLDS.AA_NORMAL);
+  const [schemeModified, setSchemeModified] = useState(false);
 
   // Compute readability report whenever scheme changes
-  const readabilityReport = useMemo(() => analyzeReadability(scheme), [scheme]);
+  const readabilityReport = useMemo(() => {
+    const report = analyzeReadability(scheme);
+    // Include modified flag in report for magic wand button visibility
+    return { ...report, schemeModified };
+  }, [scheme, schemeModified]);
 
   const generateScheme = useCallback((colors: ExtractedColor[]) => {
     const result = createColorScheme(colors, isDarkMode);
@@ -80,6 +85,7 @@ export function useColorMapping(): UseColorMappingResult {
         [name]: color,
       },
     }));
+    setSchemeModified(true);
   }, []);
 
   const setUIColor = useCallback((name: UIColorName, color: RGBColor) => {
@@ -90,6 +96,7 @@ export function useColorMapping(): UseColorMappingResult {
         [name]: color,
       },
     }));
+    setSchemeModified(true);
   }, []);
 
   const resetScheme = useCallback(() => {
@@ -99,6 +106,7 @@ export function useColorMapping(): UseColorMappingResult {
 
   const autoFixContrast = useCallback((keepBackground: boolean = false) => {
     setScheme((prev) => ensureReadability(prev, { minRatio: minContrast, keepBackground }));
+    setSchemeModified(false);
   }, [minContrast]);
 
   return {

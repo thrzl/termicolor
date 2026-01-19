@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Container, Grid, Stack, Title, Text, Button, Group, TextInput, Modal, Tabs, Paper, Box, Menu, UnstyledButton } from '@mantine/core';
+import { Container, Grid, Stack, Title, Text, Button, Group, TextInput, Modal, Tabs, Paper, Box, Menu, UnstyledButton, Tooltip, ActionIcon } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import {
@@ -16,6 +16,7 @@ import {
   IconSun,
   IconChevronDown,
   IconFileImport,
+  IconCoffee,
 } from '@tabler/icons-react';
 import type { FileWithPath } from '@mantine/dropzone';
 
@@ -530,16 +531,36 @@ export function App() {
           pointerEvents: 'none',
         }}
       >
-        <Text
-          size="xs"
-          style={{
-            color: 'var(--text-tertiary)',
-            fontFamily: '"Space Grotesk", sans-serif',
-            pointerEvents: 'auto',
-          }}
-        >
-          made by <span style={{ color: '#8b5cf6', fontWeight: 500 }}>haai</span>
-        </Text>
+        <Group justify="center" gap="xs" style={{ pointerEvents: 'auto' }}>
+          <Text
+            size="xs"
+            style={{
+              color: 'var(--text-tertiary)',
+              fontFamily: '"Space Grotesk", sans-serif',
+            }}
+          >
+            made by <span style={{ color: '#8b5cf6', fontWeight: 500 }}>haai</span>
+          </Text>
+          <Tooltip label="Support on Ko-fi">
+            <ActionIcon
+              component="a"
+              href="https://ko-fi.com/rugvin"
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="subtle"
+              size="sm"
+              radius="sm"
+              style={{
+                color: 'var(--text-tertiary)',
+                transition: 'color 0.2s ease',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#8b5cf6'}
+              onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-tertiary)'}
+            >
+              <IconCoffee size={14} />
+            </ActionIcon>
+          </Tooltip>
+        </Group>
       </Box>
 
       {/* Save Profile Modal */}

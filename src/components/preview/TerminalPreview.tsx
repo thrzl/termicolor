@@ -330,29 +330,34 @@ export function TerminalPreview({ scheme }: TerminalPreviewProps) {
   const terminalId = 'terminal-preview';
 
   // Different shadows for light vs dark terminal backgrounds
+  // Light terminal on dark app background - subtle purple glow
   const lightBgShadow = `
-    0 0 0 1px rgba(139, 92, 246, 0.2),
-    0 4px 20px rgba(0, 0, 0, 0.1),
-    0 0 40px rgba(139, 92, 246, 0.1)
+    0 0 0 1px rgba(139, 92, 246, 0.15),
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 16px 48px rgba(0, 0, 0, 0.35),
+    0 0 40px rgba(139, 92, 246, 0.12),
+    0 0 80px rgba(139, 92, 246, 0.08)
   `;
   const lightBgShadowHover = `
-    0 0 0 1px rgba(139, 92, 246, 0.3),
-    0 8px 30px rgba(0, 0, 0, 0.15),
-    0 0 60px rgba(139, 92, 246, 0.15)
+    0 0 0 1px rgba(139, 92, 246, 0.25),
+    0 12px 40px rgba(0, 0, 0, 0.6),
+    0 24px 64px rgba(0, 0, 0, 0.45),
+    0 0 50px rgba(139, 92, 246, 0.18),
+    0 0 100px rgba(139, 92, 246, 0.12)
   `;
   const darkBgShadow = `
-    0 0 0 1px rgba(139, 92, 246, 0.15),
-    0 4px 20px rgba(0, 0, 0, 0.5),
-    0 0 60px rgba(139, 92, 246, 0.2),
-    0 0 100px rgba(139, 92, 246, 0.15),
-    0 0 140px rgba(139, 92, 246, 0.1)
+    0 0 0 1px rgba(139, 92, 246, 0.2),
+    0 8px 32px rgba(0, 0, 0, 0.7),
+    0 16px 48px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(139, 92, 246, 0.15),
+    0 0 100px rgba(139, 92, 246, 0.1)
   `;
   const darkBgShadowHover = `
-    0 0 0 1px rgba(139, 92, 246, 0.3),
-    0 8px 30px rgba(0, 0, 0, 0.6),
-    0 0 80px rgba(139, 92, 246, 0.35),
-    0 0 120px rgba(139, 92, 246, 0.25),
-    0 0 160px rgba(139, 92, 246, 0.15)
+    0 0 0 1px rgba(139, 92, 246, 0.35),
+    0 12px 40px rgba(0, 0, 0, 0.8),
+    0 24px 64px rgba(0, 0, 0, 0.6),
+    0 0 80px rgba(139, 92, 246, 0.25),
+    0 0 120px rgba(139, 92, 246, 0.15)
   `;
 
   const currentShadow = isLightBg ? lightBgShadow : darkBgShadow;

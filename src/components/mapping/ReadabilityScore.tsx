@@ -75,6 +75,8 @@ export function ReadabilityScore({
   // Count colors meeting the current threshold
   const meetingThreshold = countMeetingThreshold(report, minContrast);
   const needsFix = meetingThreshold < report.total;
+  // Show magic wand if colors need fixing OR if scheme was modified since last auto-fix
+  const showAutoFix = needsFix || report.schemeModified;
 
   return (
     <Paper
@@ -123,7 +125,7 @@ export function ReadabilityScore({
             </Stack>
           </Group>
 
-          {onAutoFix && needsFix && (
+          {onAutoFix && showAutoFix && (
             <Menu
               position="bottom-end"
               withArrow
@@ -147,7 +149,7 @@ export function ReadabilityScore({
               }}
             >
               <Menu.Target>
-                <Tooltip label={`Auto-fix ${report.total - meetingThreshold} colors below ${minContrast.toFixed(1)}:1`}>
+                <Tooltip label={needsFix ? `Auto-fix ${report.total - meetingThreshold} colors below ${minContrast.toFixed(1)}:1` : 'Re-apply contrast fix'}>
                   <UnstyledButton
                     style={{
                       width: 36,

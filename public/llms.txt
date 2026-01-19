@@ -1,0 +1,25 @@
+# Termicolor
+
+> Generate terminal color schemes from images
+
+Termicolor is a web application that extracts dominant colors from images and generates terminal color palettes. Users can upload any image and get a complete ANSI color scheme.
+
+## Features
+- Extract colors from uploaded images
+- Live terminal preview with dark/light modes
+- WCAG contrast analysis
+- Export to: iTerm2, Alacritty, Kitty, Windows Terminal, Hyper, Terminal.app
+- Import existing .itermcolors files
+- Save and manage color profiles locally
+
+## Usage
+1. Visit https://termicolor.io
+2. Upload an image or drag-and-drop
+3. Adjust color mappings if needed
+4. Export to your terminal format
+
+## API
+This is a client-side only application with no public API.
+
+## Contact
+Website: https://termicolor.io

@@ -162,20 +162,37 @@ export function mapToUIColors(
   const clusters = clusterByLuminosity(colors);
   const saturatedColors = getSaturatedColors(colors);
 
+  // Sort all colors by luminosity for fallback
+  const sortedByLuminosity = [...colors].sort((a, b) => a.hsl.l - b.hsl.l);
+  const darkestColor = sortedByLuminosity[0];
+  const lightestColor = sortedByLuminosity[sortedByLuminosity.length - 1];
+
   // Background and foreground based on mode
   if (darkMode) {
+    // Dark mode: dark background, light foreground
     if (clusters.darks.length > 0) {
       result.background = clusters.darks[0].rgb;
+    } else if (darkestColor) {
+      result.background = darkestColor.rgb;
     }
     if (clusters.lights.length > 0) {
       result.foreground = clusters.lights[clusters.lights.length - 1].rgb;
+    } else if (lightestColor) {
+      result.foreground = lightestColor.rgb;
     }
   } else {
+    // Light mode: light background, dark foreground
     if (clusters.lights.length > 0) {
       result.background = clusters.lights[clusters.lights.length - 1].rgb;
+    } else if (lightestColor) {
+      // Fall back to lightest available color
+      result.background = lightestColor.rgb;
     }
     if (clusters.darks.length > 0) {
       result.foreground = clusters.darks[0].rgb;
+    } else if (darkestColor) {
+      // Fall back to darkest available color
+      result.foreground = darkestColor.rgb;
     }
   }
 

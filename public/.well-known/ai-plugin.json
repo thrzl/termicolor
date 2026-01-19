@@ -1,0 +1,12 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Termicolor",
+  "name_for_model": "termicolor",
+  "description_for_human": "Generate terminal color schemes from images",
+  "description_for_model": "A tool for generating terminal color schemes by extracting colors from images. Supports iTerm2, Alacritty, Kitty, Windows Terminal, Hyper, and Terminal.app export formats.",
+  "auth": { "type": "none" },
+  "api": { "type": "none" },
+  "logo_url": "https://termicolor.io/favicon.svg",
+  "contact_email": "hello@termicolor.io",
+  "legal_info_url": "https://termicolor.io/"
+}

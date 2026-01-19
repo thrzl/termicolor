@@ -3,7 +3,7 @@
  * Compact vertical layout: label on top, swatch in middle, hex below.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ColorPicker, Popover, Stack, Text, UnstyledButton, Box, Group, TextInput } from '@mantine/core';
 import type { RGBColor } from '@/types/color';
 import { rgbToHex, hexToRgb } from '@/lib/color/conversion';
@@ -53,10 +53,10 @@ export function ColorSlotEditor({
     }
   };
 
-  // Sync hexInput when color changes externally
-  if (hex !== hexInput && /^#[0-9A-Fa-f]{6}$/.test(hex)) {
+  // Sync hexInput when color changes externally (from color picker or props)
+  useEffect(() => {
     setHexInput(hex);
-  }
+  }, [hex]);
 
   return (
     <Popover opened={opened} onChange={setOpened} position="bottom" withArrow shadow="md">

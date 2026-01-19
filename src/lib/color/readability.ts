@@ -150,6 +150,8 @@ export interface ReadabilityReport {
   ansiContrast: Record<ANSIColorName, ContrastInfo>;
   /** Individual contrast info for UI colors. */
   uiContrast: Partial<Record<UIColorName, ContrastInfo>>;
+  /** Whether the scheme has been modified since last auto-fix. */
+  schemeModified?: boolean;
 }
 
 /**
