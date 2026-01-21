@@ -63,6 +63,8 @@ export function App() {
     setScheme,
     setMinContrast,
     autoFixContrast,
+    randomizeColors,
+    randomizeUIColors,
   } = useColorMapping();
   const { profiles, isLoading: isLoadingProfiles, create, remove } = useProfiles();
   const { downloadScheme, formats } = useExport();
@@ -121,6 +123,26 @@ export function App() {
       });
     }
   }, [colors, generateScheme]);
+
+  // Handle randomize colors
+  const handleRandomize = useCallback(() => {
+    randomizeColors();
+    notifications.show({
+      title: 'Randomized',
+      message: 'ANSI colors have been randomized',
+      color: 'violet',
+    });
+  }, [randomizeColors]);
+
+  // Handle randomize UI colors
+  const handleRandomizeUI = useCallback(() => {
+    randomizeUIColors();
+    notifications.show({
+      title: 'Randomized',
+      message: 'UI colors have been randomized',
+      color: 'violet',
+    });
+  }, [randomizeUIColors]);
 
   // Handle save profile
   const handleSaveProfile = useCallback(async () => {
@@ -509,6 +531,8 @@ export function App() {
                 onANSIColorChange={setANSIColor}
                 onUIColorChange={setUIColor}
                 onRegenerate={handleRegenerate}
+                onRandomize={handleRandomize}
+                onRandomizeUI={handleRandomizeUI}
                 onMinContrastChange={setMinContrast}
                 onAutoFix={autoFixContrast}
               />

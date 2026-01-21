@@ -4,7 +4,7 @@
  */
 
 import { SimpleGrid, Paper, Text, Stack, Group, Badge, Button } from '@mantine/core';
-import { IconTerminal, IconRefresh } from '@tabler/icons-react';
+import { IconTerminal, IconRefresh, IconDice5 } from '@tabler/icons-react';
 import type { ANSIColorName, RGBColor } from '@/types/color';
 import { ANSI_COLOR_ORDER, ANSI_DISPLAY_NAMES } from '@/lib/iterm/schema';
 import type { ContrastInfo } from '@/lib/color/readability';
@@ -16,6 +16,7 @@ interface ANSIColorGridProps {
   contrastInfo?: Record<ANSIColorName, ContrastInfo>;
   onRegenerate?: () => void;
   canRegenerate?: boolean;
+  onRandomize?: () => void;
 }
 
 /**
@@ -28,6 +29,7 @@ export function ANSIColorGrid({
   contrastInfo,
   onRegenerate,
   canRegenerate = false,
+  onRandomize,
 }: ANSIColorGridProps) {
   return (
     <Paper
@@ -59,30 +61,55 @@ export function ANSIColorGrid({
               16
             </Badge>
           </Group>
-          {onRegenerate && (
-            <Button
-              variant="subtle"
-              size="xs"
-              leftSection={<IconRefresh size={14} />}
-              onClick={onRegenerate}
-              disabled={!canRegenerate}
-              styles={{
-                root: {
-                  background: canRegenerate ? 'rgba(139, 92, 246, 0.1)' : 'transparent',
-                  border: canRegenerate ? '1px solid rgba(139, 92, 246, 0.3)' : '1px solid var(--border-subtle)',
-                  color: canRegenerate ? '#8b5cf6' : 'var(--text-tertiary)',
-                  fontWeight: 500,
-                  transition: 'all 0.2s ease',
-                  '&:hover': {
-                    background: canRegenerate ? 'rgba(139, 92, 246, 0.2)' : 'transparent',
-                    border: canRegenerate ? '1px solid rgba(139, 92, 246, 0.5)' : '1px solid var(--border-subtle)',
+          <Group gap="xs">
+            {onRandomize && (
+              <Button
+                variant="subtle"
+                size="xs"
+                leftSection={<IconDice5 size={14} />}
+                onClick={onRandomize}
+                styles={{
+                  root: {
+                    background: 'rgba(139, 92, 246, 0.1)',
+                    border: '1px solid rgba(139, 92, 246, 0.3)',
+                    color: '#8b5cf6',
+                    fontWeight: 500,
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      background: 'rgba(139, 92, 246, 0.2)',
+                      border: '1px solid rgba(139, 92, 246, 0.5)',
+                    },
                   },
-                },
-              }}
-            >
-              Regenerate
-            </Button>
-          )}
+                }}
+              >
+                Randomize
+              </Button>
+            )}
+            {onRegenerate && (
+              <Button
+                variant="subtle"
+                size="xs"
+                leftSection={<IconRefresh size={14} />}
+                onClick={onRegenerate}
+                disabled={!canRegenerate}
+                styles={{
+                  root: {
+                    background: canRegenerate ? 'rgba(139, 92, 246, 0.1)' : 'transparent',
+                    border: canRegenerate ? '1px solid rgba(139, 92, 246, 0.3)' : '1px solid var(--border-subtle)',
+                    color: canRegenerate ? '#8b5cf6' : 'var(--text-tertiary)',
+                    fontWeight: 500,
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      background: canRegenerate ? 'rgba(139, 92, 246, 0.2)' : 'transparent',
+                      border: canRegenerate ? '1px solid rgba(139, 92, 246, 0.5)' : '1px solid var(--border-subtle)',
+                    },
+                  },
+                }}
+              >
+                Regenerate
+              </Button>
+            )}
+          </Group>
         </Group>
         <SimpleGrid cols={{ base: 4, sm: 8 }} spacing={4} verticalSpacing="xs">
           {ANSI_COLOR_ORDER.map((name) => (

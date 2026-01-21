@@ -3,8 +3,8 @@
  * Linear-style purple gradient aesthetic.
  */
 
-import { Stack, SimpleGrid, Paper, Text, Group } from '@mantine/core';
-import { IconBrush } from '@tabler/icons-react';
+import { Stack, SimpleGrid, Paper, Text, Group, Button } from '@mantine/core';
+import { IconBrush, IconDice5 } from '@tabler/icons-react';
 import type { ColorScheme, ANSIColorName, UIColorName, RGBColor, ExtractedColor } from '@/types/color';
 import { UI_COLOR_ORDER, UI_DISPLAY_NAMES } from '@/lib/iterm/schema';
 import type { ReadabilityReport } from '@/lib/color/readability';
@@ -21,6 +21,8 @@ interface ColorMapperProps {
   onANSIColorChange: (name: ANSIColorName, color: RGBColor) => void;
   onUIColorChange: (name: UIColorName, color: RGBColor) => void;
   onRegenerate: () => void;
+  onRandomize: () => void;
+  onRandomizeUI: () => void;
   onMinContrastChange: (value: number) => void;
   onAutoFix: () => void;
 }
@@ -36,6 +38,8 @@ export function ColorMapper({
   onANSIColorChange,
   onUIColorChange,
   onRegenerate,
+  onRandomize,
+  onRandomizeUI,
   onMinContrastChange,
   onAutoFix,
 }: ColorMapperProps) {
@@ -66,6 +70,7 @@ export function ColorMapper({
         onChange={onANSIColorChange}
         contrastInfo={readabilityReport.ansiContrast}
         onRegenerate={onRegenerate}
+        onRandomize={onRandomize}
         canRegenerate={hasColors}
       />
 
@@ -81,11 +86,34 @@ export function ColorMapper({
         }}
       >
         <Stack gap="sm">
-          <Group gap="xs">
-            <IconBrush size={16} style={{ color: '#8b5cf6' }} />
-            <Text fw={600} size="sm" style={{ color: 'var(--text-secondary)' }}>
-              UI Colors
-            </Text>
+          <Group justify="space-between" align="center">
+            <Group gap="xs">
+              <IconBrush size={16} style={{ color: '#8b5cf6' }} />
+              <Text fw={600} size="sm" style={{ color: 'var(--text-secondary)' }}>
+                UI Colors
+              </Text>
+            </Group>
+            <Button
+              variant="subtle"
+              size="xs"
+              leftSection={<IconDice5 size={14} />}
+              onClick={onRandomizeUI}
+              styles={{
+                root: {
+                  background: 'rgba(139, 92, 246, 0.1)',
+                  border: '1px solid rgba(139, 92, 246, 0.3)',
+                  color: '#8b5cf6',
+                  fontWeight: 500,
+                  transition: 'all 0.2s ease',
+                  '&:hover': {
+                    background: 'rgba(139, 92, 246, 0.2)',
+                    border: '1px solid rgba(139, 92, 246, 0.5)',
+                  },
+                },
+              }}
+            >
+              Randomize
+            </Button>
           </Group>
           <SimpleGrid cols={{ base: 4, sm: 7 }} spacing={4} verticalSpacing="xs">
             {UI_COLOR_ORDER.map((name) => (
