@@ -617,6 +617,62 @@ export function App() {
                             </ActionIcon>
                           </Tooltip>
                         </Group>
+                        {/* Hand-drawn arrow annotation */}
+                        <Box
+                          style={{
+                            position: 'relative',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginTop: 4,
+                            opacity: 0.7,
+                          }}
+                        >
+                          <svg
+                            width="120"
+                            height="40"
+                            viewBox="0 0 120 40"
+                            style={{
+                              overflow: 'visible',
+                              transform: 'rotate(-5deg)',
+                            }}
+                          >
+                            {/* Sloppy curved arrow pointing up */}
+                            <path
+                              d="M 60 38 Q 55 25, 70 18 Q 85 10, 75 5"
+                              fill="none"
+                              stroke="#8b5cf6"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              style={{
+                                strokeDasharray: '0.5 0',
+                              }}
+                            />
+                            {/* Arrow head - sloppy */}
+                            <path
+                              d="M 72 2 L 75 5 L 78 1 M 75 5 L 80 7"
+                              fill="none"
+                              stroke="#8b5cf6"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                          <Text
+                            size="xs"
+                            style={{
+                              fontFamily: '"Caveat", cursive',
+                              fontSize: '16px',
+                              color: '#8b5cf6',
+                              transform: 'rotate(-3deg)',
+                              marginLeft: -8,
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            Share your theme!
+                          </Text>
+                        </Box>
                       </Stack>
                     </Paper>
                   )}
