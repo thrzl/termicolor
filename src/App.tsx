@@ -620,54 +620,48 @@ export function App() {
                         {/* Hand-drawn arrow annotation */}
                         <Box
                           style={{
-                            position: 'relative',
                             display: 'flex',
-                            alignItems: 'center',
+                            alignItems: 'flex-start',
                             justifyContent: 'center',
-                            marginTop: 4,
-                            opacity: 0.7,
+                            gap: 2,
+                            marginTop: 8,
+                            paddingLeft: 20,
                           }}
                         >
                           <svg
-                            width="120"
-                            height="40"
-                            viewBox="0 0 120 40"
-                            style={{
-                              overflow: 'visible',
-                              transform: 'rotate(-5deg)',
-                            }}
+                            width="30"
+                            height="35"
+                            viewBox="0 0 30 35"
+                            style={{ marginTop: 2 }}
                           >
-                            {/* Sloppy curved arrow pointing up */}
+                            {/* Wobbly curved arrow */}
                             <path
-                              d="M 60 38 Q 55 25, 70 18 Q 85 10, 75 5"
+                              d="M 15 32 C 12 28, 8 24, 10 18 C 12 12, 18 8, 16 3"
                               fill="none"
                               stroke="#8b5cf6"
                               strokeWidth="2"
                               strokeLinecap="round"
-                              strokeLinejoin="round"
-                              style={{
-                                strokeDasharray: '0.5 0',
-                              }}
+                              opacity="0.6"
                             />
-                            {/* Arrow head - sloppy */}
+                            {/* Arrow head */}
                             <path
-                              d="M 72 2 L 75 5 L 78 1 M 75 5 L 80 7"
+                              d="M 12 7 L 16 3 L 20 6"
                               fill="none"
                               stroke="#8b5cf6"
                               strokeWidth="2"
                               strokeLinecap="round"
                               strokeLinejoin="round"
+                              opacity="0.6"
                             />
                           </svg>
                           <Text
-                            size="xs"
                             style={{
-                              fontFamily: '"Caveat", cursive',
-                              fontSize: '16px',
+                              fontFamily: '"Kalam", cursive',
+                              fontSize: '15px',
                               color: '#8b5cf6',
-                              transform: 'rotate(-3deg)',
-                              marginLeft: -8,
-                              whiteSpace: 'nowrap',
+                              opacity: 0.6,
+                              transform: 'rotate(-2deg)',
+                              marginTop: 8,
                             }}
                           >
                             Share your theme!
