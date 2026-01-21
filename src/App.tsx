@@ -18,6 +18,7 @@ import {
   IconFileImport,
   IconCoffee,
   IconShare,
+  IconBrandX,
 } from '@tabler/icons-react';
 import type { FileWithPath } from '@mantine/dropzone';
 
@@ -71,7 +72,7 @@ export function App() {
   const { profiles, isLoading: isLoadingProfiles, create, remove } = useProfiles();
   const { downloadScheme, formats } = useExport();
   const { importFromFile, isImporting, importError } = useImport();
-  const { share, isSharing, canShareFiles } = useShare();
+  const { share, shareToTwitter, isSharing, canShareFiles } = useShare();
 
   // Generate scheme when colors are extracted
   useEffect(() => {
@@ -238,17 +239,8 @@ export function App() {
 
   // Handle share
   const handleShare = useCallback(async () => {
-    if (!imageUrl) {
-      notifications.show({
-        title: 'No Image',
-        message: 'Upload an image first to share your color scheme',
-        color: 'yellow',
-      });
-      return;
-    }
-
     try {
-      await share(imageUrl, scheme);
+      await share(scheme, imageUrl);
       if (!canShareFiles) {
         notifications.show({
           title: 'Image Downloaded',
@@ -267,6 +259,26 @@ export function App() {
       }
     }
   }, [imageUrl, scheme, share, canShareFiles]);
+
+  // Handle share to Twitter
+  const handleShareToTwitter = useCallback(async () => {
+    try {
+      await shareToTwitter(scheme, imageUrl);
+      notifications.show({
+        title: 'Ready to Tweet!',
+        message: 'Image downloaded. Attach it to your tweet!',
+        color: 'blue',
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        notifications.show({
+          title: 'Share Failed',
+          message: err.message,
+          color: 'red',
+        });
+      }
+    }
+  }, [imageUrl, scheme, shareToTwitter]);
 
   // Handle color select from palette
   const [selectedColor, setSelectedColor] = useState<ExtractedColor | null>(null);
@@ -535,22 +547,38 @@ export function App() {
                           </Button>
                           <ExportMenu onExport={handleExportCurrent} />
                         </Group>
-                        <Button
-                          leftSection={<IconShare size={16} />}
-                          onClick={handleShare}
-                          loading={isSharing}
-                          disabled={!imageUrl}
-                          size="sm"
-                          variant="subtle"
-                          style={{
-                            background: 'rgba(139, 92, 246, 0.1)',
-                            border: '1px solid rgba(139, 92, 246, 0.3)',
-                            color: '#8b5cf6',
-                            fontWeight: 500,
-                          }}
-                        >
-                          {canShareFiles ? 'Share' : 'Download Share Image'}
-                        </Button>
+                        <Group grow>
+                          <Button
+                            leftSection={<IconShare size={16} />}
+                            onClick={handleShare}
+                            loading={isSharing}
+                            size="sm"
+                            variant="subtle"
+                            style={{
+                              background: 'rgba(139, 92, 246, 0.1)',
+                              border: '1px solid rgba(139, 92, 246, 0.3)',
+                              color: '#8b5cf6',
+                              fontWeight: 500,
+                            }}
+                          >
+                            {canShareFiles ? 'Share' : 'Download'}
+                          </Button>
+                          <Button
+                            leftSection={<IconBrandX size={16} />}
+                            onClick={handleShareToTwitter}
+                            loading={isSharing}
+                            size="sm"
+                            variant="subtle"
+                            style={{
+                              background: 'rgba(0, 0, 0, 0.2)',
+                              border: '1px solid rgba(255, 255, 255, 0.1)',
+                              color: '#fff',
+                              fontWeight: 500,
+                            }}
+                          >
+                            Post to X
+                          </Button>
+                        </Group>
                       </Stack>
                     </Paper>
                   )}

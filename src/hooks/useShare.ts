@@ -9,8 +9,10 @@ import { ANSI_COLOR_ORDER } from '@/lib/iterm/schema';
 interface UseShareResult {
   /** Whether sharing is in progress. */
   isSharing: boolean;
-  /** Share the color scheme with an image. */
-  share: (imageUrl: string, scheme: ColorScheme) => Promise<void>;
+  /** Share the color scheme, optionally with an image. */
+  share: (scheme: ColorScheme, imageUrl?: string | null) => Promise<void>;
+  /** Share to Twitter - downloads image and opens Twitter compose. */
+  shareToTwitter: (scheme: ColorScheme, imageUrl?: string | null) => Promise<void>;
   /** Check if Web Share API with files is supported. */
   canShareFiles: boolean;
 }
@@ -24,35 +26,52 @@ function rgbToHex(color: RGBColor): string {
 }
 
 /**
- * Generates a shareable composite image with the source image and color palette.
- *
- * @param imageUrl - URL of the source image.
- * @param scheme - The color scheme to display.
- * @returns Promise resolving to a Blob of the composite image.
+ * Loads an image from a URL.
  */
-async function generateShareImage(
-  imageUrl: string,
-  scheme: ColorScheme
-): Promise<Blob> {
+function loadImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('Failed to load image'));
+    img.src = url;
+  });
+}
 
-    img.onload = () => {
-      // Canvas dimensions
-      const padding = 32;
-      const swatchSize = 48;
-      const swatchGap = 8;
-      const swatchesPerRow = 8;
-      const swatchRows = 2;
-      const swatchAreaWidth = swatchesPerRow * swatchSize + (swatchesPerRow - 1) * swatchGap;
-      const swatchAreaHeight = swatchRows * swatchSize + (swatchRows - 1) * swatchGap;
+/**
+ * Generates a shareable composite image with the color palette and optional source image.
+ *
+ * @param scheme - The color scheme to display.
+ * @param imageUrl - Optional URL of the source image.
+ * @returns Promise resolving to a Blob of the composite image.
+ */
+async function generateShareImage(
+  scheme: ColorScheme,
+  imageUrl?: string | null
+): Promise<Blob> {
+  // Canvas dimensions
+  const padding = 32;
+  const swatchSize = 48;
+  const swatchGap = 8;
+  const swatchesPerRow = 8;
+  const swatchRows = 2;
+  const swatchAreaWidth = swatchesPerRow * swatchSize + (swatchesPerRow - 1) * swatchGap;
+  const swatchAreaHeight = swatchRows * swatchSize + (swatchRows - 1) * swatchGap;
+
+  // Load source image if provided
+  let img: HTMLImageElement | null = null;
+  let imgWidth = 0;
+  let imgHeight = 0;
+
+  if (imageUrl) {
+    try {
+      img = await loadImage(imageUrl);
 
       // Scale image to reasonable size
       const maxImgWidth = 400;
       const maxImgHeight = 300;
-      let imgWidth = img.width;
-      let imgHeight = img.height;
+      imgWidth = img.width;
+      imgHeight = img.height;
 
       if (imgWidth > maxImgWidth) {
         imgHeight = (imgHeight * maxImgWidth) / imgWidth;
@@ -62,109 +81,116 @@ async function generateShareImage(
         imgWidth = (imgWidth * maxImgHeight) / imgHeight;
         imgHeight = maxImgHeight;
       }
+    } catch {
+      // Continue without image
+      img = null;
+    }
+  }
 
-      // Calculate canvas size
-      const contentWidth = Math.max(imgWidth, swatchAreaWidth);
-      const canvasWidth = contentWidth + padding * 2;
-      const canvasHeight = imgHeight + swatchAreaHeight + padding * 3 + 60; // Extra for header/footer
+  // Calculate canvas size
+  const contentWidth = Math.max(imgWidth || 300, swatchAreaWidth);
+  const canvasWidth = contentWidth + padding * 2;
+  const headerHeight = 50;
+  const footerHeight = 40;
+  const imageSection = img ? imgHeight + padding : 0;
+  const canvasHeight = headerHeight + imageSection + swatchAreaHeight + footerHeight + padding * 2;
 
-      const canvas = document.createElement('canvas');
-      canvas.width = canvasWidth;
-      canvas.height = canvasHeight;
+  const canvas = document.createElement('canvas');
+  canvas.width = canvasWidth;
+  canvas.height = canvasHeight;
 
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        reject(new Error('Could not get canvas context'));
-        return;
-      }
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    throw new Error('Could not get canvas context');
+  }
 
-      // Background - use scheme background with slight darkening
-      const bgColor = scheme.ui.background;
-      ctx.fillStyle = rgbToHex(bgColor);
-      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+  // Background - use scheme background
+  const bgColor = scheme.ui.background;
+  ctx.fillStyle = rgbToHex(bgColor);
+  ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-      // Add subtle gradient overlay
-      const gradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
-      gradient.addColorStop(0, 'rgba(139, 92, 246, 0.1)');
-      gradient.addColorStop(1, 'rgba(139, 92, 246, 0.05)');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+  // Add subtle gradient overlay
+  const gradient = ctx.createLinearGradient(0, 0, canvasWidth, canvasHeight);
+  gradient.addColorStop(0, 'rgba(139, 92, 246, 0.1)');
+  gradient.addColorStop(1, 'rgba(139, 92, 246, 0.05)');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-      // Header text
-      ctx.fillStyle = rgbToHex(scheme.ui.foreground);
-      ctx.font = 'bold 20px "Space Grotesk", system-ui, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('termicolor.io', canvasWidth / 2, padding + 20);
+  // Header text
+  ctx.fillStyle = rgbToHex(scheme.ui.foreground);
+  ctx.font = 'bold 20px "Space Grotesk", system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('termicolor.io', canvasWidth / 2, padding + 20);
 
-      // Draw source image (centered, with rounded corners effect via clip)
-      const imgX = (canvasWidth - imgWidth) / 2;
-      const imgY = padding + 40;
+  let currentY = headerHeight + padding;
 
-      // Draw image with rounded corners
-      const radius = 12;
-      ctx.save();
-      ctx.beginPath();
-      ctx.roundRect(imgX, imgY, imgWidth, imgHeight, radius);
-      ctx.clip();
-      ctx.drawImage(img, imgX, imgY, imgWidth, imgHeight);
-      ctx.restore();
+  // Draw source image if available
+  if (img) {
+    const imgX = (canvasWidth - imgWidth) / 2;
+    const imgY = currentY;
 
-      // Draw border around image
-      ctx.strokeStyle = 'rgba(139, 92, 246, 0.3)';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.roundRect(imgX, imgY, imgWidth, imgHeight, radius);
-      ctx.stroke();
+    // Draw image with rounded corners
+    const radius = 12;
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(imgX, imgY, imgWidth, imgHeight, radius);
+    ctx.clip();
+    ctx.drawImage(img, imgX, imgY, imgWidth, imgHeight);
+    ctx.restore();
 
-      // Draw color swatches
-      const swatchStartX = (canvasWidth - swatchAreaWidth) / 2;
-      const swatchStartY = imgY + imgHeight + padding;
+    // Draw border around image
+    ctx.strokeStyle = 'rgba(139, 92, 246, 0.3)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(imgX, imgY, imgWidth, imgHeight, radius);
+    ctx.stroke();
 
-      ANSI_COLOR_ORDER.forEach((name, index) => {
-        const row = Math.floor(index / swatchesPerRow);
-        const col = index % swatchesPerRow;
-        const x = swatchStartX + col * (swatchSize + swatchGap);
-        const y = swatchStartY + row * (swatchSize + swatchGap);
+    currentY = imgY + imgHeight + padding;
+  }
 
-        const color = scheme.ansi[name];
+  // Draw color swatches
+  const swatchStartX = (canvasWidth - swatchAreaWidth) / 2;
+  const swatchStartY = currentY;
 
-        // Draw swatch with rounded corners
-        ctx.fillStyle = rgbToHex(color);
-        ctx.beginPath();
-        ctx.roundRect(x, y, swatchSize, swatchSize, 6);
-        ctx.fill();
+  ANSI_COLOR_ORDER.forEach((name, index) => {
+    const row = Math.floor(index / swatchesPerRow);
+    const col = index % swatchesPerRow;
+    const x = swatchStartX + col * (swatchSize + swatchGap);
+    const y = swatchStartY + row * (swatchSize + swatchGap);
 
-        // Draw subtle border
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      });
+    const color = scheme.ansi[name];
 
-      // Footer text
-      ctx.fillStyle = 'rgba(139, 92, 246, 0.7)';
-      ctx.font = '12px "Space Grotesk", system-ui, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Create terminal themes from any image', canvasWidth / 2, canvasHeight - padding + 8);
+    // Draw swatch with rounded corners
+    ctx.fillStyle = rgbToHex(color);
+    ctx.beginPath();
+    ctx.roundRect(x, y, swatchSize, swatchSize, 6);
+    ctx.fill();
 
-      // Convert to blob
-      canvas.toBlob(
-        (blob) => {
-          if (blob) {
-            resolve(blob);
-          } else {
-            reject(new Error('Failed to create image blob'));
-          }
-        },
-        'image/png',
-        1.0
-      );
-    };
+    // Draw subtle border
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  });
 
-    img.onerror = () => {
-      reject(new Error('Failed to load source image'));
-    };
+  // Footer text
+  ctx.fillStyle = 'rgba(139, 92, 246, 0.7)';
+  ctx.font = '12px "Space Grotesk", system-ui, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Create terminal themes from any image', canvasWidth / 2, canvasHeight - padding + 8);
 
-    img.src = imageUrl;
+  // Convert to blob
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          resolve(blob);
+        } else {
+          reject(new Error('Failed to create image blob'));
+        }
+      },
+      'image/png',
+      1.0
+    );
   });
 }
 
@@ -181,12 +207,12 @@ export function useShare(): UseShareResult {
     typeof navigator.canShare === 'function' &&
     navigator.canShare({ files: [new File([], 'test.png', { type: 'image/png' })] });
 
-  const share = useCallback(async (imageUrl: string, scheme: ColorScheme) => {
+  const share = useCallback(async (scheme: ColorScheme, imageUrl?: string | null) => {
     setIsSharing(true);
 
     try {
       // Generate the composite image
-      const imageBlob = await generateShareImage(imageUrl, scheme);
+      const imageBlob = await generateShareImage(scheme, imageUrl);
       const file = new File([imageBlob], 'termicolor-theme.png', { type: 'image/png' });
 
       const shareData = {
@@ -215,9 +241,38 @@ export function useShare(): UseShareResult {
     }
   }, [canShareFiles]);
 
+  const shareToTwitter = useCallback(async (scheme: ColorScheme, imageUrl?: string | null) => {
+    setIsSharing(true);
+
+    try {
+      // Generate and download the image first
+      const imageBlob = await generateShareImage(scheme, imageUrl);
+      const url = URL.createObjectURL(imageBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'termicolor-theme.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      // Open Twitter compose with pre-filled text
+      const tweetText = encodeURIComponent('Check out this terminal color scheme I created with @termicolor! 🎨\n\nhttps://termicolor.io');
+      const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
+
+      // Small delay to ensure download starts before opening Twitter
+      setTimeout(() => {
+        window.open(twitterUrl, '_blank', 'noopener,noreferrer');
+      }, 300);
+    } finally {
+      setIsSharing(false);
+    }
+  }, []);
+
   return {
     isSharing,
     share,
+    shareToTwitter,
     canShareFiles,
   };
 }
