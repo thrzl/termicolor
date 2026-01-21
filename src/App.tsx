@@ -617,56 +617,21 @@ export function App() {
                             </ActionIcon>
                           </Tooltip>
                         </Group>
-                        {/* Hand-drawn arrow annotation */}
-                        <Box
+                        {/* Hand-drawn text annotation */}
+                        <Text
                           style={{
-                            display: 'flex',
-                            alignItems: 'flex-start',
-                            justifyContent: 'center',
-                            gap: 2,
-                            marginTop: 8,
-                            paddingLeft: 20,
+                            fontFamily: '"Caveat", cursive',
+                            fontSize: '22px',
+                            fontWeight: 600,
+                            color: '#8b5cf6',
+                            opacity: 0.7,
+                            transform: 'rotate(-2deg)',
+                            marginTop: 6,
+                            textAlign: 'center',
                           }}
                         >
-                          <svg
-                            width="30"
-                            height="35"
-                            viewBox="0 0 30 35"
-                            style={{ marginTop: 2 }}
-                          >
-                            {/* Wobbly curved arrow */}
-                            <path
-                              d="M 15 32 C 12 28, 8 24, 10 18 C 12 12, 18 8, 16 3"
-                              fill="none"
-                              stroke="#8b5cf6"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              opacity="0.6"
-                            />
-                            {/* Arrow head */}
-                            <path
-                              d="M 12 7 L 16 3 L 20 6"
-                              fill="none"
-                              stroke="#8b5cf6"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              opacity="0.6"
-                            />
-                          </svg>
-                          <Text
-                            style={{
-                              fontFamily: '"Kalam", cursive',
-                              fontSize: '15px',
-                              color: '#8b5cf6',
-                              opacity: 0.6,
-                              transform: 'rotate(-2deg)',
-                              marginTop: 8,
-                            }}
-                          >
-                            Share your theme!
-                          </Text>
-                        </Box>
+                          Share your theme!
+                        </Text>
                       </Stack>
                     </Paper>
                   )}
