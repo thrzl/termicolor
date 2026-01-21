@@ -1,0 +1,10 @@
+name = "termicolor"
+compatibility_date = "2024-01-21"
+pages_build_output_dir = "./dist"
+
+# KV namespace for share tracking
+# Create with: wrangler kv namespace create SHARE_STATS
+# Then replace the id below
+[[kv_namespaces]]
+binding = "SHARE_STATS"
+id = "a21dbcbe64e4477cbfe1aff1de8524f0"
