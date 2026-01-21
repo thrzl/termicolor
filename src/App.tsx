@@ -17,9 +17,9 @@ import {
   IconChevronDown,
   IconFileImport,
   IconCoffee,
-  IconShare,
   IconBrandX,
   IconBrandReddit,
+  IconCopy,
 } from '@tabler/icons-react';
 import type { FileWithPath } from '@mantine/dropzone';
 
@@ -37,7 +37,7 @@ import { useProfiles } from './hooks/useProfiles';
 import { useExport } from './hooks/useExport';
 import { useImport } from './hooks/useImport';
 import { useShare } from './hooks/useShare';
-import { getSchemeFromUrl } from './lib/color/urlCodec';
+import { getSchemeFromUrl, createShareUrl } from './lib/color/urlCodec';
 import { ExportMenu } from './components/export/ExportMenu';
 import type { ExportFormat } from './lib/exporters';
 
@@ -74,7 +74,7 @@ export function App() {
   const { profiles, isLoading: isLoadingProfiles, create, remove } = useProfiles();
   const { downloadScheme, formats } = useExport();
   const { importFromFile, isImporting, importError } = useImport();
-  const { share, shareToTwitter, shareToReddit, isSharing, canShareFiles } = useShare();
+  const { shareToTwitter, shareToReddit, isSharing } = useShare();
 
   // Generate scheme when colors are extracted
   useEffect(() => {
@@ -254,29 +254,6 @@ export function App() {
     }
   }, [importFromFile, importError, setScheme]);
 
-  // Handle share
-  const handleShare = useCallback(async () => {
-    try {
-      await share(scheme, imageUrl);
-      if (!canShareFiles) {
-        notifications.show({
-          title: 'Image Downloaded',
-          message: 'Share image downloaded! You can now post it to social media.',
-          color: 'green',
-        });
-      }
-    } catch (err) {
-      // User cancelled share or error occurred
-      if (err instanceof Error && err.name !== 'AbortError') {
-        notifications.show({
-          title: 'Share Failed',
-          message: err.message,
-          color: 'red',
-        });
-      }
-    }
-  }, [imageUrl, scheme, share, canShareFiles]);
-
   // Handle share to Twitter
   const handleShareToTwitter = useCallback(async () => {
     try {
@@ -306,6 +283,25 @@ export function App() {
       }
     }
   }, [scheme, shareToReddit]);
+
+  // Handle copy URL to clipboard
+  const handleCopyUrl = useCallback(async () => {
+    try {
+      const shareUrl = createShareUrl(scheme);
+      await navigator.clipboard.writeText(shareUrl);
+      notifications.show({
+        title: 'Copied!',
+        message: 'Share URL copied to clipboard',
+        color: 'green',
+      });
+    } catch (err) {
+      notifications.show({
+        title: 'Copy Failed',
+        message: 'Could not copy to clipboard',
+        color: 'red',
+      });
+    }
+  }, [scheme]);
 
   // Handle color select from palette
   const [selectedColor, setSelectedColor] = useState<ExtractedColor | null>(null);
@@ -576,9 +572,8 @@ export function App() {
                         </Group>
                         <Group gap="xs">
                           <Button
-                            leftSection={<IconShare size={16} />}
-                            onClick={handleShare}
-                            loading={isSharing}
+                            leftSection={<IconCopy size={16} />}
+                            onClick={handleCopyUrl}
                             size="sm"
                             variant="subtle"
                             style={{
@@ -589,7 +584,7 @@ export function App() {
                               fontWeight: 500,
                             }}
                           >
-                            {canShareFiles ? 'Share' : 'Download Image'}
+                            Copy URL
                           </Button>
                           <Tooltip label="Post to X">
                             <ActionIcon
