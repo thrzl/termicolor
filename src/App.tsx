@@ -19,6 +19,7 @@ import {
   IconCoffee,
   IconShare,
   IconBrandX,
+  IconBrandReddit,
 } from '@tabler/icons-react';
 import type { FileWithPath } from '@mantine/dropzone';
 
@@ -72,7 +73,7 @@ export function App() {
   const { profiles, isLoading: isLoadingProfiles, create, remove } = useProfiles();
   const { downloadScheme, formats } = useExport();
   const { importFromFile, isImporting, importError } = useImport();
-  const { share, shareToTwitter, isSharing, canShareFiles } = useShare();
+  const { share, shareToTwitter, shareToReddit, isSharing, canShareFiles } = useShare();
 
   // Generate scheme when colors are extracted
   useEffect(() => {
@@ -279,6 +280,26 @@ export function App() {
       }
     }
   }, [imageUrl, scheme, shareToTwitter]);
+
+  // Handle share to Reddit
+  const handleShareToReddit = useCallback(async () => {
+    try {
+      await shareToReddit(scheme, imageUrl);
+      notifications.show({
+        title: 'Ready to Post!',
+        message: 'Image downloaded. Upload it to your Reddit post!',
+        color: 'orange',
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        notifications.show({
+          title: 'Share Failed',
+          message: err.message,
+          color: 'red',
+        });
+      }
+    }
+  }, [imageUrl, scheme, shareToReddit]);
 
   // Handle color select from palette
   const [selectedColor, setSelectedColor] = useState<ExtractedColor | null>(null);
@@ -547,7 +568,7 @@ export function App() {
                           </Button>
                           <ExportMenu onExport={handleExportCurrent} />
                         </Group>
-                        <Group grow>
+                        <Group gap="xs">
                           <Button
                             leftSection={<IconShare size={16} />}
                             onClick={handleShare}
@@ -555,29 +576,45 @@ export function App() {
                             size="sm"
                             variant="subtle"
                             style={{
+                              flex: 1,
                               background: 'rgba(139, 92, 246, 0.1)',
                               border: '1px solid rgba(139, 92, 246, 0.3)',
                               color: '#8b5cf6',
                               fontWeight: 500,
                             }}
                           >
-                            {canShareFiles ? 'Share' : 'Download'}
+                            {canShareFiles ? 'Share' : 'Download Image'}
                           </Button>
-                          <Button
-                            leftSection={<IconBrandX size={16} />}
-                            onClick={handleShareToTwitter}
-                            loading={isSharing}
-                            size="sm"
-                            variant="subtle"
-                            style={{
-                              background: 'rgba(0, 0, 0, 0.2)',
-                              border: '1px solid rgba(255, 255, 255, 0.1)',
-                              color: '#fff',
-                              fontWeight: 500,
-                            }}
-                          >
-                            Post to X
-                          </Button>
+                          <Tooltip label="Post to X">
+                            <ActionIcon
+                              variant="subtle"
+                              size="lg"
+                              onClick={handleShareToTwitter}
+                              loading={isSharing}
+                              style={{
+                                background: 'rgba(0, 0, 0, 0.3)',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                color: '#fff',
+                              }}
+                            >
+                              <IconBrandX size={18} />
+                            </ActionIcon>
+                          </Tooltip>
+                          <Tooltip label="Post to Reddit">
+                            <ActionIcon
+                              variant="subtle"
+                              size="lg"
+                              onClick={handleShareToReddit}
+                              loading={isSharing}
+                              style={{
+                                background: 'rgba(255, 69, 0, 0.2)',
+                                border: '1px solid rgba(255, 69, 0, 0.3)',
+                                color: '#ff4500',
+                              }}
+                            >
+                              <IconBrandReddit size={18} />
+                            </ActionIcon>
+                          </Tooltip>
                         </Group>
                       </Stack>
                     </Paper>

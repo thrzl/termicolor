@@ -13,6 +13,8 @@ interface UseShareResult {
   share: (scheme: ColorScheme, imageUrl?: string | null) => Promise<void>;
   /** Share to Twitter - downloads image and opens Twitter compose. */
   shareToTwitter: (scheme: ColorScheme, imageUrl?: string | null) => Promise<void>;
+  /** Share to Reddit - downloads image and opens Reddit submit. */
+  shareToReddit: (scheme: ColorScheme, imageUrl?: string | null) => Promise<void>;
   /** Check if Web Share API with files is supported. */
   canShareFiles: boolean;
 }
@@ -257,7 +259,7 @@ export function useShare(): UseShareResult {
       URL.revokeObjectURL(url);
 
       // Open Twitter compose with pre-filled text
-      const tweetText = encodeURIComponent('Check out this terminal color scheme I created with @termicolor! 🎨\n\nhttps://termicolor.io');
+      const tweetText = encodeURIComponent('Check out this terminal color scheme I created with Termicolor! 🎨\n\nhttps://termicolor.io');
       const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
 
       // Small delay to ensure download starts before opening Twitter
@@ -269,10 +271,39 @@ export function useShare(): UseShareResult {
     }
   }, []);
 
+  const shareToReddit = useCallback(async (scheme: ColorScheme, imageUrl?: string | null) => {
+    setIsSharing(true);
+
+    try {
+      // Generate and download the image first
+      const imageBlob = await generateShareImage(scheme, imageUrl);
+      const url = URL.createObjectURL(imageBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'termicolor-theme.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      // Open Reddit submit page (r/unixporn is popular for terminal themes)
+      const title = encodeURIComponent('[Terminal] Color scheme created with Termicolor');
+      const redditUrl = `https://www.reddit.com/r/unixporn/submit?type=IMAGE&title=${title}`;
+
+      // Small delay to ensure download starts before opening Reddit
+      setTimeout(() => {
+        window.open(redditUrl, '_blank', 'noopener,noreferrer');
+      }, 300);
+    } finally {
+      setIsSharing(false);
+    }
+  }, []);
+
   return {
     isSharing,
     share,
     shareToTwitter,
+    shareToReddit,
     canShareFiles,
   };
 }
