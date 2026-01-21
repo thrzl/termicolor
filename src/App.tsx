@@ -17,6 +17,7 @@ import {
   IconChevronDown,
   IconFileImport,
   IconCoffee,
+  IconShare,
 } from '@tabler/icons-react';
 import type { FileWithPath } from '@mantine/dropzone';
 
@@ -33,6 +34,7 @@ import { useColorMapping } from './hooks/useColorMapping';
 import { useProfiles } from './hooks/useProfiles';
 import { useExport } from './hooks/useExport';
 import { useImport } from './hooks/useImport';
+import { useShare } from './hooks/useShare';
 import { ExportMenu } from './components/export/ExportMenu';
 import type { ExportFormat } from './lib/exporters';
 
@@ -69,6 +71,7 @@ export function App() {
   const { profiles, isLoading: isLoadingProfiles, create, remove } = useProfiles();
   const { downloadScheme, formats } = useExport();
   const { importFromFile, isImporting, importError } = useImport();
+  const { share, isSharing, canShareFiles } = useShare();
 
   // Generate scheme when colors are extracted
   useEffect(() => {
@@ -232,6 +235,38 @@ export function App() {
       });
     }
   }, [importFromFile, importError, setScheme]);
+
+  // Handle share
+  const handleShare = useCallback(async () => {
+    if (!imageUrl) {
+      notifications.show({
+        title: 'No Image',
+        message: 'Upload an image first to share your color scheme',
+        color: 'yellow',
+      });
+      return;
+    }
+
+    try {
+      await share(imageUrl, scheme);
+      if (!canShareFiles) {
+        notifications.show({
+          title: 'Image Downloaded',
+          message: 'Share image downloaded! You can now post it to social media.',
+          color: 'green',
+        });
+      }
+    } catch (err) {
+      // User cancelled share or error occurred
+      if (err instanceof Error && err.name !== 'AbortError') {
+        notifications.show({
+          title: 'Share Failed',
+          message: err.message,
+          color: 'red',
+        });
+      }
+    }
+  }, [imageUrl, scheme, share, canShareFiles]);
 
   // Handle color select from palette
   const [selectedColor, setSelectedColor] = useState<ExtractedColor | null>(null);
@@ -483,22 +518,40 @@ export function App() {
                         border: '1px solid rgba(139, 92, 246, 0.15)',
                       }}
                     >
-                      <Group grow>
+                      <Stack gap="sm">
+                        <Group grow>
+                          <Button
+                            leftSection={<IconDeviceFloppy size={16} />}
+                            onClick={openSaveModal}
+                            size="sm"
+                            className="accent-btn"
+                            style={{
+                              background: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%)',
+                              color: '#fff',
+                              fontWeight: 600,
+                            }}
+                          >
+                            Save
+                          </Button>
+                          <ExportMenu onExport={handleExportCurrent} />
+                        </Group>
                         <Button
-                          leftSection={<IconDeviceFloppy size={16} />}
-                          onClick={openSaveModal}
+                          leftSection={<IconShare size={16} />}
+                          onClick={handleShare}
+                          loading={isSharing}
+                          disabled={!imageUrl}
                           size="sm"
-                          className="accent-btn"
+                          variant="subtle"
                           style={{
-                            background: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%)',
-                            color: '#fff',
-                            fontWeight: 600,
+                            background: 'rgba(139, 92, 246, 0.1)',
+                            border: '1px solid rgba(139, 92, 246, 0.3)',
+                            color: '#8b5cf6',
+                            fontWeight: 500,
                           }}
                         >
-                          Save
+                          {canShareFiles ? 'Share' : 'Download Share Image'}
                         </Button>
-                        <ExportMenu onExport={handleExportCurrent} />
-                      </Group>
+                      </Stack>
                     </Paper>
                   )}
                 </Stack>
