@@ -1,0 +1,214 @@
+# Termicolor - Extended Documentation
+
+> Complete guide to generating terminal color schemes from images
+
+Website: https://termicolor.io
+
+## Table of Contents
+
+1. Overview
+2. Features in Detail
+3. ANSI Color System
+4. Export Format Specifications
+5. URL Sharing Protocol
+6. Accessibility Features
+7. Use Cases
+8. FAQ
+
+---
+
+## 1. Overview
+
+Termicolor is a free, privacy-focused web application for generating terminal color schemes from images. It runs entirely in the browser with no server-side processing.
+
+**Key Benefits:**
+- Create cohesive terminal themes that match your wallpaper or brand
+- Ensure accessibility with built-in WCAG contrast checking
+- Export to any major terminal emulator
+- Share themes via URL
+
+---
+
+## 2. Features in Detail
+
+### Color Extraction
+- Uses median-cut color quantization algorithm
+- Extracts 8-16 dominant colors from any image
+- Supports JPEG, PNG, WebP, and GIF formats
+- No file size limits (processed locally)
+
+### Color Mapping
+The extracted colors are intelligently mapped to ANSI color slots:
+- Background and foreground colors
+- 8 normal colors (black, red, green, yellow, blue, magenta, cyan, white)
+- 8 bright variants of each color
+- Cursor and selection colors
+
+### Live Preview
+- Realistic terminal simulation
+- Shows actual code with syntax highlighting
+- Dark and light mode toggle
+- Displays how colors work together
+
+### Profile Management
+- Save multiple color profiles locally
+- Import existing iTerm2 .itermcolors files
+- Quick switching between saved themes
+
+---
+
+## 3. ANSI Color System
+
+Standard 16-color ANSI palette used by Termicolor:
+
+| Index | Name         | Typical Use                    |
+|-------|--------------|--------------------------------|
+| 0     | Black        | Background, dark elements      |
+| 1     | Red          | Errors, deletions              |
+| 2     | Green        | Success, additions, strings    |
+| 3     | Yellow       | Warnings, modifications        |
+| 4     | Blue         | Information, links, keywords   |
+| 5     | Magenta      | Special, constants             |
+| 6     | Cyan         | Strings, special text          |
+| 7     | White        | Default text                   |
+| 8-15  | Bright variants of 0-7                      |
+
+---
+
+## 4. Export Format Specifications
+
+### iTerm2 (.itermcolors)
+- XML plist format
+- Contains RGB values as floating-point (0.0-1.0)
+- Includes all 16 ANSI colors plus UI colors
+
+### Alacritty (YAML)
+- YAML configuration snippet
+- Hex color values
+- Copy into alacritty.yml under `colors` section
+
+### Kitty (conf)
+- Plain text configuration
+- Format: `color0 #hexvalue`
+- Append to kitty.conf
+
+### Windows Terminal (JSON)
+- JSON color scheme object
+- Add to `schemes` array in settings.json
+- Reference by name in profile
+
+### Hyper (JavaScript)
+- JavaScript configuration object
+- Add to .hyper.js config
+
+### Terminal.app
+- macOS terminal profile
+- Import via Terminal preferences
+
+---
+
+## 5. URL Sharing Protocol
+
+Termicolor supports sharing color schemes via URL parameters.
+
+### Format
+```
+https://termicolor.io/?c=<base64-encoded-colors>
+```
+
+### Encoding Details
+- Colors are encoded as a compact binary format
+- Base64 encoded for URL safety
+- Contains all 16 ANSI colors + UI colors (background, foreground, cursor, selection)
+- Total: 20 colors × 3 bytes (RGB) = 60 bytes before encoding
+
+### Example Workflow
+1. Create or modify a color scheme
+2. Click "Copy URL" or share button
+3. URL contains encoded colors
+4. Recipients see the exact same colors when they visit
+
+---
+
+## 6. Accessibility Features
+
+### WCAG Contrast Analysis
+- Checks contrast ratio between foreground and background
+- Checks each ANSI color against background
+- Reports WCAG AA and AAA compliance levels
+
+### Minimum Contrast Ratios
+- WCAG AA: 4.5:1 for normal text, 3:1 for large text
+- WCAG AAA: 7:1 for normal text, 4.5:1 for large text
+
+### Auto-Fix
+- Automatic adjustment of colors that fail contrast checks
+- Preserves hue while adjusting lightness
+- Optional manual override
+
+---
+
+## 7. Use Cases
+
+### For Developers
+- Match terminal theme to IDE or wallpaper
+- Create branded terminal themes for teams
+- Ensure accessible color schemes for visibility
+
+### For Content Creators
+- Generate consistent themes for tutorials
+- Create themed terminal screenshots
+- Share configurations with followers
+
+### For Designers
+- Quickly prototype terminal color schemes
+- Test color palette accessibility
+- Export to multiple platforms at once
+
+---
+
+## 8. FAQ
+
+**Q: Is my image uploaded to a server?**
+A: No. All image processing happens in your browser. Nothing is sent to any server.
+
+**Q: Can I use this offline?**
+A: Yes. After the initial page load, the app works entirely offline.
+
+**Q: What image formats are supported?**
+A: JPEG, PNG, WebP, and GIF.
+
+**Q: How do I import an existing iTerm2 theme?**
+A: Click the import button and select your .itermcolors file.
+
+**Q: Can I manually adjust individual colors?**
+A: Yes. Click any color swatch in the palette to open a color picker.
+
+**Q: Is this free?**
+A: Yes, completely free with no ads or tracking.
+
+**Q: How do I report a bug or suggest a feature?**
+A: Visit the website and use the feedback option.
+
+---
+
+## Technical Specifications
+
+- Built with React and TypeScript
+- Uses ColorThief for color extraction
+- Runs on Cloudflare's edge network
+- No cookies or tracking
+- Mobile-responsive design
+- Source images never leave your device
+
+---
+
+## Links
+
+- Website: https://termicolor.io
+- Documentation: https://termicolor.io/llms.txt
+- AI Plugin: https://termicolor.io/.well-known/ai-plugin.json
+
+---
+
+Last updated: 2025-01

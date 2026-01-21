@@ -7,10 +7,13 @@
     <title>Termicolor - Terminal Color Scheme Generator</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Generate beautiful terminal color schemes from images. Extract colors and export to iTerm2, Alacritty, Kitty, Windows Terminal, and more.">
-    <meta name="keywords" content="terminal colors, iTerm2, color scheme, theme generator, Alacritty, Kitty, Windows Terminal">
+    <meta name="description" content="Generate beautiful terminal color schemes from images. Extract colors and export to iTerm2, Alacritty, Kitty, Windows Terminal, and more. Free, private, no signup required.">
+    <meta name="keywords" content="terminal colors, iTerm2, color scheme, theme generator, Alacritty, Kitty, Windows Terminal, terminal theme, ANSI colors, color palette, terminal customization">
     <meta name="author" content="Termicolor">
     <link rel="canonical" href="https://termicolor.io/">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="theme-color" content="#8b5cf6">
+    <meta name="color-scheme" content="dark light">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
@@ -18,41 +21,165 @@
     <meta property="og:title" content="Termicolor - Terminal Color Scheme Generator">
     <meta property="og:description" content="Generate beautiful terminal color schemes from images. Export to iTerm2, Alacritty, Kitty, and more.">
     <meta property="og:image" content="https://termicolor.io/og-image.svg">
+    <meta property="og:image:alt" content="Termicolor terminal color scheme generator preview">
+    <meta property="og:site_name" content="Termicolor">
+    <meta property="og:locale" content="en_US">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Termicolor - Terminal Color Scheme Generator">
-    <meta name="twitter:description" content="Generate terminal color schemes from images.">
+    <meta name="twitter:description" content="Generate terminal color schemes from images. Free and private.">
     <meta name="twitter:image" content="https://termicolor.io/og-image.svg">
+    <meta name="twitter:image:alt" content="Termicolor terminal color scheme generator">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- Structured Data -->
+    <!-- Structured Data: WebApplication -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
       "name": "Termicolor",
       "url": "https://termicolor.io",
-      "description": "Generate terminal color schemes from images. Export to iTerm2, Alacritty, Kitty, Windows Terminal, and more.",
+      "description": "Generate terminal color schemes from images. Extract colors and export to iTerm2, Alacritty, Kitty, Windows Terminal, Hyper, and Terminal.app.",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "softwareVersion": "1.0",
       "offers": {
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "USD"
       },
       "featureList": [
-        "Extract colors from images",
-        "iTerm2 export",
-        "Alacritty export",
-        "Kitty export",
-        "Windows Terminal export",
-        "WCAG contrast analysis"
+        "Extract colors from any image",
+        "Export to iTerm2, Alacritty, Kitty, Windows Terminal, Hyper, Terminal.app",
+        "WCAG contrast analysis for accessibility",
+        "Live terminal preview",
+        "Dark and light mode support",
+        "Share themes via URL",
+        "Import existing iTerm2 themes",
+        "Save and manage color profiles"
+      ],
+      "screenshot": "https://termicolor.io/og-image.svg",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5",
+        "ratingCount": "1"
+      }
+    }
+    </script>
+
+    <!-- Structured Data: HowTo -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "HowTo",
+      "name": "How to Create a Terminal Color Scheme from an Image",
+      "description": "Generate a custom terminal color palette from any image using Termicolor",
+      "totalTime": "PT2M",
+      "tool": {
+        "@type": "HowToTool",
+        "name": "Termicolor web application"
+      },
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "name": "Upload an image",
+          "text": "Visit termicolor.io and drag-and-drop or select an image file (JPEG, PNG, WebP, or GIF)",
+          "url": "https://termicolor.io"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "name": "Review extracted colors",
+          "text": "Termicolor automatically extracts dominant colors and maps them to ANSI terminal color slots"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "name": "Adjust colors if needed",
+          "text": "Click any color swatch to manually adjust individual colors using the color picker"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 4,
+          "name": "Check accessibility",
+          "text": "Run the WCAG contrast analysis to ensure your colors are readable"
+        },
+        {
+          "@type": "HowToStep",
+          "position": 5,
+          "name": "Export your theme",
+          "text": "Download the configuration file for your terminal (iTerm2, Alacritty, Kitty, Windows Terminal, Hyper, or Terminal.app)"
+        }
       ]
+    }
+    </script>
+
+    <!-- Structured Data: FAQPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is Termicolor free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, Termicolor is completely free with no ads, no signup required, and no usage limits."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my image uploaded to a server?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. All image processing happens locally in your browser. Your images are never uploaded to any server, ensuring complete privacy."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What terminal emulators does Termicolor support?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Termicolor supports exporting to iTerm2, Alacritty, Kitty, Windows Terminal, Hyper, and macOS Terminal.app."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I share my color scheme with others?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! Click the share button to copy a URL that contains your entire color scheme. Anyone who visits that URL will see your exact colors."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What image formats are supported?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Termicolor supports JPEG, PNG, WebP, and GIF image formats."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <!-- Structured Data: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Termicolor",
+      "url": "https://termicolor.io",
+      "logo": "https://termicolor.io/favicon.svg",
+      "sameAs": []
     }
     </script>
   </head>

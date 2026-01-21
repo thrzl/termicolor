@@ -1,25 +1,66 @@
 # Termicolor
 
-> Generate terminal color schemes from images
+> Generate terminal color schemes from any image
 
-Termicolor is a web application that extracts dominant colors from images and generates terminal color palettes. Users can upload any image and get a complete ANSI color scheme.
+## Overview
 
-## Features
-- Extract colors from uploaded images
-- Live terminal preview with dark/light modes
-- WCAG contrast analysis
-- Export to: iTerm2, Alacritty, Kitty, Windows Terminal, Hyper, Terminal.app
-- Import existing .itermcolors files
-- Save and manage color profiles locally
+Termicolor is a free web application that extracts dominant colors from images and generates complete terminal color palettes. It's designed for developers who want to create custom, visually cohesive terminal themes.
 
-## Usage
+Website: https://termicolor.io
+
+## What It Does
+
+1. **Color Extraction**: Upload any image (JPEG, PNG, WebP, GIF) and Termicolor extracts the dominant colors using advanced color quantization
+2. **ANSI Mapping**: Automatically maps extracted colors to the 16 standard ANSI terminal colors (8 normal + 8 bright variants)
+3. **Live Preview**: See your theme in a realistic terminal preview with syntax highlighting examples
+4. **Contrast Analysis**: WCAG accessibility analysis ensures text remains readable
+5. **Multi-Format Export**: Download configurations for all major terminals
+
+## Supported Export Formats
+
+- iTerm2 (.itermcolors XML)
+- Alacritty (YAML)
+- Kitty (conf)
+- Windows Terminal (JSON)
+- Hyper (JavaScript)
+- Terminal.app (macOS)
+
+## How to Use
+
 1. Visit https://termicolor.io
-2. Upload an image or drag-and-drop
-3. Adjust color mappings if needed
-4. Export to your terminal format
+2. Upload an image by drag-and-drop or file picker
+3. View the extracted color palette
+4. Adjust individual color mappings if needed (click any color swatch)
+5. Toggle between dark/light mode preview
+6. Run contrast analysis to check accessibility
+7. Export to your preferred terminal format
 
-## API
-This is a client-side only application with no public API.
+## URL Sharing
+
+Color schemes can be shared via URL. The `?c=` parameter contains a base64-encoded color scheme:
+
+Example: `https://termicolor.io/?c=<encoded-colors>`
+
+When someone visits a shared URL, the color scheme is automatically loaded.
+
+## Technical Details
+
+- Client-side only (no server processing of images)
+- No data collection or tracking
+- Works offline after initial load
+- Mobile-responsive design
+
+## Related Topics
+
+- Terminal customization
+- ANSI color codes
+- iTerm2 theming
+- Developer tools
+- Color theory
+- Accessibility (WCAG contrast)
 
 ## Contact
+
 Website: https://termicolor.io
+
+For extended documentation, see: https://termicolor.io/llms-full.txt

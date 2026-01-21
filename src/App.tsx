@@ -74,7 +74,7 @@ export function App() {
   const { profiles, isLoading: isLoadingProfiles, create, remove } = useProfiles();
   const { downloadScheme, formats } = useExport();
   const { importFromFile, isImporting, importError } = useImport();
-  const { shareToTwitter, shareToReddit, isSharing } = useShare();
+  const { shareToTwitter, shareToReddit, isSharing, trackShare } = useShare();
 
   // Generate scheme when colors are extracted
   useEffect(() => {
@@ -289,6 +289,7 @@ export function App() {
     try {
       const shareUrl = createShareUrl(scheme);
       await navigator.clipboard.writeText(shareUrl);
+      trackShare('copy');
       notifications.show({
         title: 'Copied!',
         message: 'Share URL copied to clipboard',
@@ -301,7 +302,7 @@ export function App() {
         color: 'red',
       });
     }
-  }, [scheme]);
+  }, [scheme, trackShare]);
 
   // Handle color select from palette
   const [selectedColor, setSelectedColor] = useState<ExtractedColor | null>(null);

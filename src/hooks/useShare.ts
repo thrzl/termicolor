@@ -7,6 +7,9 @@ import type { ColorScheme, RGBColor } from '@/types/color';
 import { ANSI_COLOR_ORDER } from '@/lib/iterm/schema';
 import { createShareUrl } from '@/lib/color/urlCodec';
 
+/** Supported share platforms for tracking. */
+export type SharePlatform = 'twitter' | 'reddit' | 'copy' | 'native';
+
 interface UseShareResult {
   /** Whether sharing is in progress. */
   isSharing: boolean;
@@ -18,6 +21,24 @@ interface UseShareResult {
   shareToReddit: (scheme: ColorScheme) => Promise<void>;
   /** Check if Web Share API with files is supported. */
   canShareFiles: boolean;
+  /** Track a share event. */
+  trackShare: (platform: SharePlatform) => void;
+}
+
+/**
+ * Track a share event by sending it to the tracking API.
+ *
+ * @param platform - The platform being shared to.
+ */
+function sendTrackEvent(platform: SharePlatform): void {
+  // Fire-and-forget tracking request
+  fetch('/api/track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ platform }),
+  }).catch(() => {
+    // Silently ignore tracking errors - don't affect user experience
+  });
 }
 
 /**
@@ -210,6 +231,10 @@ export function useShare(): UseShareResult {
     typeof navigator.canShare === 'function' &&
     navigator.canShare({ files: [new File([], 'test.png', { type: 'image/png' })] });
 
+  const trackShare = useCallback((platform: SharePlatform) => {
+    sendTrackEvent(platform);
+  }, []);
+
   const share = useCallback(async (scheme: ColorScheme, imageUrl?: string | null) => {
     setIsSharing(true);
 
@@ -228,6 +253,7 @@ export function useShare(): UseShareResult {
       // Try Web Share API first
       if (canShareFiles && navigator.canShare(shareData)) {
         await navigator.share(shareData);
+        sendTrackEvent('native');
       } else {
         // Fallback: download the image
         const url = URL.createObjectURL(imageBlob);
@@ -251,6 +277,9 @@ export function useShare(): UseShareResult {
       // Create URL with encoded colors
       const shareUrl = createShareUrl(scheme);
 
+      // Track the share event
+      sendTrackEvent('twitter');
+
       // Open Twitter compose with pre-filled text including the share URL
       const tweetText = encodeURIComponent(`Check out this terminal color scheme I created with Termicolor! 🎨\n\n${shareUrl}`);
       const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
@@ -268,6 +297,9 @@ export function useShare(): UseShareResult {
       // Create URL with encoded colors
       const shareUrl = createShareUrl(scheme);
 
+      // Track the share event
+      sendTrackEvent('reddit');
+
       // Open Reddit submit page with link type
       const title = encodeURIComponent('[Terminal] Color scheme created with Termicolor');
       const redditUrl = `https://www.reddit.com/r/unixporn/submit?type=LINK&url=${encodeURIComponent(shareUrl)}&title=${title}`;
@@ -284,5 +316,6 @@ export function useShare(): UseShareResult {
     shareToTwitter,
     shareToReddit,
     canShareFiles,
+    trackShare,
   };
 }
