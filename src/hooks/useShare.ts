@@ -5,16 +5,17 @@
 import { useCallback, useState } from 'react';
 import type { ColorScheme, RGBColor } from '@/types/color';
 import { ANSI_COLOR_ORDER } from '@/lib/iterm/schema';
+import { createShareUrl } from '@/lib/color/urlCodec';
 
 interface UseShareResult {
   /** Whether sharing is in progress. */
   isSharing: boolean;
   /** Share the color scheme, optionally with an image. */
   share: (scheme: ColorScheme, imageUrl?: string | null) => Promise<void>;
-  /** Share to Twitter - downloads image and opens Twitter compose. */
-  shareToTwitter: (scheme: ColorScheme, imageUrl?: string | null) => Promise<void>;
-  /** Share to Reddit - downloads image and opens Reddit submit. */
-  shareToReddit: (scheme: ColorScheme, imageUrl?: string | null) => Promise<void>;
+  /** Share to Twitter - opens Twitter compose with URL containing encoded colors. */
+  shareToTwitter: (scheme: ColorScheme) => Promise<void>;
+  /** Share to Reddit - opens Reddit submit with URL containing encoded colors. */
+  shareToReddit: (scheme: ColorScheme) => Promise<void>;
   /** Check if Web Share API with files is supported. */
   canShareFiles: boolean;
 }
@@ -243,57 +244,35 @@ export function useShare(): UseShareResult {
     }
   }, [canShareFiles]);
 
-  const shareToTwitter = useCallback(async (scheme: ColorScheme, imageUrl?: string | null) => {
+  const shareToTwitter = useCallback(async (scheme: ColorScheme) => {
     setIsSharing(true);
 
     try {
-      // Generate and download the image first
-      const imageBlob = await generateShareImage(scheme, imageUrl);
-      const url = URL.createObjectURL(imageBlob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'termicolor-theme.png';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      // Create URL with encoded colors
+      const shareUrl = createShareUrl(scheme);
 
-      // Open Twitter compose with pre-filled text
-      const tweetText = encodeURIComponent('Check out this terminal color scheme I created with Termicolor! 🎨\n\nhttps://termicolor.io');
+      // Open Twitter compose with pre-filled text including the share URL
+      const tweetText = encodeURIComponent(`Check out this terminal color scheme I created with Termicolor! 🎨\n\n${shareUrl}`);
       const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
 
-      // Small delay to ensure download starts before opening Twitter
-      setTimeout(() => {
-        window.open(twitterUrl, '_blank', 'noopener,noreferrer');
-      }, 300);
+      window.open(twitterUrl, '_blank', 'noopener,noreferrer');
     } finally {
       setIsSharing(false);
     }
   }, []);
 
-  const shareToReddit = useCallback(async (scheme: ColorScheme, imageUrl?: string | null) => {
+  const shareToReddit = useCallback(async (scheme: ColorScheme) => {
     setIsSharing(true);
 
     try {
-      // Generate and download the image first
-      const imageBlob = await generateShareImage(scheme, imageUrl);
-      const url = URL.createObjectURL(imageBlob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'termicolor-theme.png';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      // Create URL with encoded colors
+      const shareUrl = createShareUrl(scheme);
 
-      // Open Reddit submit page (r/unixporn is popular for terminal themes)
+      // Open Reddit submit page with link type
       const title = encodeURIComponent('[Terminal] Color scheme created with Termicolor');
-      const redditUrl = `https://www.reddit.com/r/unixporn/submit?type=IMAGE&title=${title}`;
+      const redditUrl = `https://www.reddit.com/r/unixporn/submit?type=LINK&url=${encodeURIComponent(shareUrl)}&title=${title}`;
 
-      // Small delay to ensure download starts before opening Reddit
-      setTimeout(() => {
-        window.open(redditUrl, '_blank', 'noopener,noreferrer');
-      }, 300);
+      window.open(redditUrl, '_blank', 'noopener,noreferrer');
     } finally {
       setIsSharing(false);
     }

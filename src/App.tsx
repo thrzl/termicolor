@@ -37,6 +37,7 @@ import { useProfiles } from './hooks/useProfiles';
 import { useExport } from './hooks/useExport';
 import { useImport } from './hooks/useImport';
 import { useShare } from './hooks/useShare';
+import { getSchemeFromUrl } from './lib/color/urlCodec';
 import { ExportMenu } from './components/export/ExportMenu';
 import type { ExportFormat } from './lib/exporters';
 
@@ -93,6 +94,21 @@ export function App() {
       });
     }
   }, [isGrayscale, colors.length]);
+
+  // Load scheme from URL on mount (for shared links)
+  useEffect(() => {
+    const urlScheme = getSchemeFromUrl();
+    if (urlScheme) {
+      setScheme(urlScheme);
+      notifications.show({
+        title: 'Scheme Loaded',
+        message: 'Color scheme loaded from shared link!',
+        color: 'green',
+      });
+      // Clean up URL without reload
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, [setScheme]);
 
   // Handle image drop
   const handleImageDrop = useCallback((files: FileWithPath[]) => {
@@ -264,12 +280,7 @@ export function App() {
   // Handle share to Twitter
   const handleShareToTwitter = useCallback(async () => {
     try {
-      await shareToTwitter(scheme, imageUrl);
-      notifications.show({
-        title: 'Ready to Tweet!',
-        message: 'Image downloaded. Attach it to your tweet!',
-        color: 'blue',
-      });
+      await shareToTwitter(scheme);
     } catch (err) {
       if (err instanceof Error) {
         notifications.show({
@@ -279,17 +290,12 @@ export function App() {
         });
       }
     }
-  }, [imageUrl, scheme, shareToTwitter]);
+  }, [scheme, shareToTwitter]);
 
   // Handle share to Reddit
   const handleShareToReddit = useCallback(async () => {
     try {
-      await shareToReddit(scheme, imageUrl);
-      notifications.show({
-        title: 'Ready to Post!',
-        message: 'Image downloaded. Upload it to your Reddit post!',
-        color: 'orange',
-      });
+      await shareToReddit(scheme);
     } catch (err) {
       if (err instanceof Error) {
         notifications.show({
@@ -299,7 +305,7 @@ export function App() {
         });
       }
     }
-  }, [imageUrl, scheme, shareToReddit]);
+  }, [scheme, shareToReddit]);
 
   // Handle color select from palette
   const [selectedColor, setSelectedColor] = useState<ExtractedColor | null>(null);
