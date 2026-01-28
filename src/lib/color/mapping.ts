@@ -81,12 +81,11 @@ export function mapToANSIColors(
   const usedColors = new Set<string>();
 
   // Map black and white from luminosity extremes
-  // In dark mode: black=darkest (bg-like), white=lightest (readable text)
-  // In light mode: swap so white=darkest (readable text on light bg)
   const darkest = clusters.darks.length > 0 ? clusters.darks[0] : null;
   const lightest = clusters.lights.length > 0 ? clusters.lights[clusters.lights.length - 1] : null;
 
   if (darkMode) {
+    // Dark mode: black=darkest (bg-like), white=lightest (readable text)
     if (darkest) {
       result.black = darkest.rgb;
       usedColors.add(darkest.hex);
@@ -96,12 +95,10 @@ export function mapToANSIColors(
       usedColors.add(lightest.hex);
     }
   } else {
-    // Light mode: swap so "white" ANSI color is dark (readable on light bg)
-    if (lightest) {
-      result.black = lightest.rgb;
-      usedColors.add(lightest.hex);
-    }
+    // Light mode: BOTH black and white need to be dark for readability on light bg
+    // Apps may use either ANSI "black" or "white" to render text
     if (darkest) {
+      result.black = darkest.rgb;
       result.white = darkest.rgb;
       usedColors.add(darkest.hex);
     }
@@ -144,7 +141,9 @@ export function mapToANSIColors(
     }
   }
 
-  // Generate bright variants by increasing luminosity
+  // Generate bright variants
+  // In dark mode: increase luminosity (brighter)
+  // In light mode: for black/white keep them dark, for colors increase saturation/luminosity
   const brightVariants: [ANSIColorName, ANSIColorName][] = [
     ['black', 'brightBlack'],
     ['red', 'brightRed'],
@@ -157,7 +156,13 @@ export function mapToANSIColors(
   ];
 
   for (const [base, bright] of brightVariants) {
-    result[bright] = adjustLuminosity(result[base], 20);
+    if (!darkMode && (base === 'black' || base === 'white')) {
+      // Light mode: bright black/white should still be dark (readable on light bg)
+      // Make them slightly lighter than base but still dark
+      result[bright] = adjustLuminosity(result[base], 15);
+    } else {
+      result[bright] = adjustLuminosity(result[base], 20);
+    }
   }
 
   return result;
@@ -268,10 +273,10 @@ export function createColorScheme(
 
 /**
  * Toggles the color scheme between dark and light mode.
- * Swaps UI foreground/background and ANSI black/white pairs for proper contrast.
+ * Swaps UI foreground/background and adjusts ANSI black/white for proper contrast.
  *
  * :param scheme: Current color scheme.
- * :returns: New color scheme with colors swapped for opposite mode.
+ * :returns: New color scheme with colors adjusted for opposite mode.
  */
 export function toggleSchemeMode(scheme: ColorScheme): ColorScheme {
   const newUI = { ...scheme.ui };
@@ -292,15 +297,35 @@ export function toggleSchemeMode(scheme: ColorScheme): ColorScheme {
   newUI.selection = newUI.selectionText;
   newUI.selectionText = tempSelection;
 
-  // Swap ANSI black/white pairs for proper contrast on opposite background
-  // This ensures "white" text is dark on light bg and "black" text is light on dark bg
-  const tempBlack = newANSI.black;
-  newANSI.black = newANSI.white;
-  newANSI.white = tempBlack;
+  // Determine if new mode is light (light background) or dark
+  const newBgLuminosity = rgbToHsl(newUI.background).l;
+  const isNowLightMode = newBgLuminosity > 50;
 
-  const tempBrightBlack = newANSI.brightBlack;
-  newANSI.brightBlack = newANSI.brightWhite;
-  newANSI.brightWhite = tempBrightBlack;
+  if (isNowLightMode) {
+    // Switching TO light mode: both black and white need to be dark for readability
+    // Use whichever is darker between current black and white
+    const blackL = rgbToHsl(newANSI.black).l;
+    const whiteL = rgbToHsl(newANSI.white).l;
+    const darkerColor = blackL < whiteL ? newANSI.black : newANSI.white;
+    const brighterDark = adjustLuminosity(darkerColor, 15);
+    newANSI.black = darkerColor;
+    newANSI.white = darkerColor;
+    newANSI.brightBlack = brighterDark;
+    newANSI.brightWhite = adjustLuminosity(darkerColor, 25);
+  } else {
+    // Switching TO dark mode: black should be dark, white should be light
+    const blackL = rgbToHsl(newANSI.black).l;
+    const whiteL = rgbToHsl(newANSI.white).l;
+    if (blackL > whiteL) {
+      // They're inverted, swap them back
+      const tempBlack = newANSI.black;
+      newANSI.black = newANSI.white;
+      newANSI.white = tempBlack;
+    }
+    // Ensure bright variants make sense
+    newANSI.brightBlack = adjustLuminosity(newANSI.black, 20);
+    newANSI.brightWhite = adjustLuminosity(newANSI.white, 10);
+  }
 
   return {
     ansi: newANSI,
