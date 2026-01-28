@@ -60,6 +60,8 @@ export function App() {
     isGrayscale,
     minContrast,
     readabilityReport,
+    vibrantSyntax,
+    saturationLevel,
     generateScheme,
     toggleMode,
     setANSIColor,
@@ -70,6 +72,8 @@ export function App() {
     autoFixContrast,
     randomizeColors,
     randomizeUIColors,
+    setVibrantSyntax,
+    setSaturationLevel,
   } = useColorMapping();
   const { profiles, isLoading: isLoadingProfiles, create, remove } = useProfiles();
   const { downloadScheme, formats } = useExport();
@@ -652,6 +656,8 @@ export function App() {
                 extractedColors={colors}
                 minContrast={minContrast}
                 readabilityReport={readabilityReport}
+                vibrantSyntax={vibrantSyntax}
+                saturationLevel={saturationLevel}
                 onANSIColorChange={setANSIColor}
                 onUIColorChange={setUIColor}
                 onRegenerate={handleRegenerate}
@@ -659,6 +665,8 @@ export function App() {
                 onRandomizeUI={handleRandomizeUI}
                 onMinContrastChange={setMinContrast}
                 onAutoFix={autoFixContrast}
+                onVibrantSyntaxChange={setVibrantSyntax}
+                onSaturationLevelChange={setSaturationLevel}
               />
             </Stack>
           </Grid.Col>

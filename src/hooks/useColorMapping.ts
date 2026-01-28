@@ -12,6 +12,23 @@ import {
   CONTRAST_THRESHOLDS,
   type ReadabilityReport,
 } from '@/lib/color/readability';
+import { rgbToHsl, hslToRgb, adjustSaturation } from '@/lib/color/conversion';
+
+/** Target hues for ANSI colors when boosting grays. */
+const ANSI_TARGET_HUES: Partial<Record<ANSIColorName, number>> = {
+  red: 0,
+  brightRed: 0,
+  green: 120,
+  brightGreen: 120,
+  yellow: 60,
+  brightYellow: 60,
+  blue: 220,
+  brightBlue: 220,
+  magenta: 300,
+  brightMagenta: 300,
+  cyan: 180,
+  brightCyan: 180,
+};
 
 interface UseColorMappingResult {
   /** Current color scheme. */
@@ -24,6 +41,10 @@ interface UseColorMappingResult {
   minContrast: number;
   /** Current readability report. */
   readabilityReport: ReadabilityReport;
+  /** Whether vibrant syntax colors mode is enabled. */
+  vibrantSyntax: boolean;
+  /** Saturation multiplier (1 = normal, 0.5 = half, 1.5 = 150%). */
+  saturationLevel: number;
   /** Generate color scheme from extracted colors. */
   generateScheme: (colors: ExtractedColor[]) => void;
   /** Toggle between dark and light mode. */
@@ -44,6 +65,10 @@ interface UseColorMappingResult {
   randomizeColors: () => void;
   /** Randomize all UI colors. */
   randomizeUIColors: () => void;
+  /** Toggle vibrant syntax colors mode. */
+  setVibrantSyntax: (enabled: boolean) => void;
+  /** Set saturation level. */
+  setSaturationLevel: (level: number) => void;
 }
 
 const DEFAULT_SCHEME: ColorScheme = {
@@ -62,6 +87,49 @@ export function useColorMapping(): UseColorMappingResult {
   const [isGrayscale, setIsGrayscale] = useState(false);
   const [minContrast, setMinContrast] = useState<number>(CONTRAST_THRESHOLDS.AA_NORMAL);
   const [schemeModified, setSchemeModified] = useState(false);
+  const [vibrantSyntax, setVibrantSyntaxState] = useState(false);
+  const [saturationLevel, setSaturationLevelState] = useState(1);
+
+  /**
+   * Applies vibrant syntax colors by boosting gray ANSI colors to saturated versions.
+   */
+  const applyVibrantSyntax = useCallback((inputScheme: ColorScheme): ColorScheme => {
+    const newAnsi = { ...inputScheme.ansi };
+    const minSaturation = 40;
+
+    for (const [name, targetHue] of Object.entries(ANSI_TARGET_HUES)) {
+      const colorName = name as ANSIColorName;
+      const color = newAnsi[colorName];
+      const hsl = rgbToHsl(color);
+
+      if (hsl.s < minSaturation) {
+        // Boost saturation and use target hue for this color slot
+        hsl.h = targetHue;
+        hsl.s = Math.max(minSaturation, hsl.s + 30);
+        newAnsi[colorName] = hslToRgb(hsl);
+      }
+    }
+
+    return { ...inputScheme, ansi: newAnsi };
+  }, []);
+
+  /**
+   * Applies saturation adjustment to all ANSI colors.
+   */
+  const applySaturationLevel = useCallback((inputScheme: ColorScheme, level: number): ColorScheme => {
+    if (level === 1) return inputScheme;
+
+    const newAnsi = { ...inputScheme.ansi };
+    for (const name of Object.keys(newAnsi) as ANSIColorName[]) {
+      // Skip black/white as they should stay neutral
+      if (name === 'black' || name === 'white' || name === 'brightBlack' || name === 'brightWhite') {
+        continue;
+      }
+      newAnsi[name] = adjustSaturation(newAnsi[name], level);
+    }
+
+    return { ...inputScheme, ansi: newAnsi };
+  }, []);
 
   // Compute readability report whenever scheme changes
   const readabilityReport = useMemo(() => {
@@ -265,12 +333,36 @@ export function useColorMapping(): UseColorMappingResult {
     setSchemeModified(true);
   }, []);
 
+  const setVibrantSyntax = useCallback((enabled: boolean) => {
+    setVibrantSyntaxState(enabled);
+    if (enabled) {
+      setScheme((prev) => applyVibrantSyntax(prev));
+    }
+    setSchemeModified(true);
+  }, [applyVibrantSyntax]);
+
+  const setSaturationLevel = useCallback((level: number) => {
+    // Apply the difference from current level
+    const currentLevel = saturationLevel;
+    setSaturationLevelState(level);
+    if (level !== currentLevel) {
+      setScheme((prev) => {
+        // Undo current saturation, apply new level
+        const normalized = applySaturationLevel(prev, 1 / currentLevel);
+        return applySaturationLevel(normalized, level);
+      });
+    }
+    setSchemeModified(true);
+  }, [saturationLevel, applySaturationLevel]);
+
   return {
     scheme,
     isDarkMode,
     isGrayscale,
     minContrast,
     readabilityReport,
+    vibrantSyntax,
+    saturationLevel,
     generateScheme,
     toggleMode,
     setANSIColor,
@@ -281,5 +373,7 @@ export function useColorMapping(): UseColorMappingResult {
     autoFixContrast,
     randomizeColors,
     randomizeUIColors,
+    setVibrantSyntax,
+    setSaturationLevel,
   };
 }

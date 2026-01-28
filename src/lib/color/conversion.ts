@@ -183,3 +183,40 @@ export function hueDistance(h1: number, h2: number): number {
   const diff = Math.abs(h1 - h2);
   return Math.min(diff, 360 - diff);
 }
+
+/**
+ * Adjusts the saturation of an RGB color.
+ *
+ * :param rgb: RGB color to adjust.
+ * :param multiplier: Saturation multiplier (0 = grayscale, 1 = unchanged, 2 = double).
+ * :returns: Adjusted RGB color.
+ */
+export function adjustSaturation(rgb: RGBColor, multiplier: number): RGBColor {
+  const hsl = rgbToHsl(rgb);
+  hsl.s = Math.max(0, Math.min(100, hsl.s * multiplier));
+  return hslToRgb(hsl);
+}
+
+/**
+ * Sets a minimum saturation for a color, boosting if needed.
+ *
+ * :param rgb: RGB color to check.
+ * :param minSaturation: Minimum saturation (0-100).
+ * :param targetHue: Optional target hue to use if color is gray (0-360).
+ * :returns: Color with at least the minimum saturation.
+ */
+export function ensureMinSaturation(
+  rgb: RGBColor,
+  minSaturation: number,
+  targetHue?: number
+): RGBColor {
+  const hsl = rgbToHsl(rgb);
+  if (hsl.s < minSaturation) {
+    hsl.s = minSaturation;
+    // If color was gray and we have a target hue, use it
+    if (hsl.s === 0 && targetHue !== undefined) {
+      hsl.h = targetHue;
+    }
+  }
+  return hslToRgb(hsl);
+}
