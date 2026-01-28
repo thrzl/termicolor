@@ -216,8 +216,8 @@ export function ThemeTuner({
                   onClick={() => onAutoFix(false)}
                 >
                   <Stack gap={2}>
-                    <Text size="sm" fw={500}>Smart fix</Text>
-                    <Text size="xs" c="dimmed">May adjust background if needed</Text>
+                    <Text size="sm" fw={500} style={{ color: 'var(--text-primary)' }}>Smart fix</Text>
+                    <Text size="xs" style={{ color: 'var(--text-tertiary)' }}>May adjust background if needed</Text>
                   </Stack>
                 </Menu.Item>
                 <Menu.Item
@@ -225,8 +225,8 @@ export function ThemeTuner({
                   onClick={() => onAutoFix(true)}
                 >
                   <Stack gap={2}>
-                    <Text size="sm" fw={500}>Keep background</Text>
-                    <Text size="xs" c="dimmed">Only adjust foreground colors</Text>
+                    <Text size="sm" fw={500} style={{ color: 'var(--text-primary)' }}>Keep background</Text>
+                    <Text size="xs" style={{ color: 'var(--text-tertiary)' }}>Only adjust foreground colors</Text>
                   </Stack>
                 </Menu.Item>
               </Menu.Dropdown>
