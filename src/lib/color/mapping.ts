@@ -69,26 +69,42 @@ function findBestHueMatch(
  * Maps extracted colors to ANSI color slots.
  *
  * :param colors: Extracted colors from image.
+ * :param darkMode: Whether generating for dark mode (affects black/white assignment).
  * :returns: Record mapping ANSI color names to RGB values.
  */
 export function mapToANSIColors(
-  colors: ExtractedColor[]
+  colors: ExtractedColor[],
+  darkMode: boolean = true
 ): Record<ANSIColorName, RGBColor> {
   const result: Record<ANSIColorName, RGBColor> = { ...DEFAULT_ANSI_COLORS };
   const clusters = clusterByLuminosity(colors);
   const usedColors = new Set<string>();
 
   // Map black and white from luminosity extremes
-  if (clusters.darks.length > 0) {
-    const darkest = clusters.darks[0];
-    result.black = darkest.rgb;
-    usedColors.add(darkest.hex);
-  }
+  // In dark mode: black=darkest (bg-like), white=lightest (readable text)
+  // In light mode: swap so white=darkest (readable text on light bg)
+  const darkest = clusters.darks.length > 0 ? clusters.darks[0] : null;
+  const lightest = clusters.lights.length > 0 ? clusters.lights[clusters.lights.length - 1] : null;
 
-  if (clusters.lights.length > 0) {
-    const lightest = clusters.lights[clusters.lights.length - 1];
-    result.white = lightest.rgb;
-    usedColors.add(lightest.hex);
+  if (darkMode) {
+    if (darkest) {
+      result.black = darkest.rgb;
+      usedColors.add(darkest.hex);
+    }
+    if (lightest) {
+      result.white = lightest.rgb;
+      usedColors.add(lightest.hex);
+    }
+  } else {
+    // Light mode: swap so "white" ANSI color is dark (readable on light bg)
+    if (lightest) {
+      result.black = lightest.rgb;
+      usedColors.add(lightest.hex);
+    }
+    if (darkest) {
+      result.white = darkest.rgb;
+      usedColors.add(darkest.hex);
+    }
   }
 
   // Map chromatic colors by hue proximity
@@ -243,7 +259,7 @@ export function createColorScheme(
 
   return {
     scheme: {
-      ansi: mapToANSIColors(colors),
+      ansi: mapToANSIColors(colors, darkMode),
       ui: mapToUIColors(colors, darkMode),
     },
     isGrayscale,
@@ -252,12 +268,14 @@ export function createColorScheme(
 
 /**
  * Toggles the color scheme between dark and light mode.
+ * Swaps UI foreground/background and ANSI black/white pairs for proper contrast.
  *
  * :param scheme: Current color scheme.
- * :returns: New color scheme with swapped background/foreground.
+ * :returns: New color scheme with colors swapped for opposite mode.
  */
 export function toggleSchemeMode(scheme: ColorScheme): ColorScheme {
   const newUI = { ...scheme.ui };
+  const newANSI = { ...scheme.ansi };
 
   // Swap background and foreground
   const temp = newUI.background;
@@ -274,8 +292,18 @@ export function toggleSchemeMode(scheme: ColorScheme): ColorScheme {
   newUI.selection = newUI.selectionText;
   newUI.selectionText = tempSelection;
 
+  // Swap ANSI black/white pairs for proper contrast on opposite background
+  // This ensures "white" text is dark on light bg and "black" text is light on dark bg
+  const tempBlack = newANSI.black;
+  newANSI.black = newANSI.white;
+  newANSI.white = tempBlack;
+
+  const tempBrightBlack = newANSI.brightBlack;
+  newANSI.brightBlack = newANSI.brightWhite;
+  newANSI.brightWhite = tempBrightBlack;
+
   return {
-    ansi: scheme.ansi,
+    ansi: newANSI,
     ui: newUI,
   };
 }
