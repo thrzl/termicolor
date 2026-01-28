@@ -68,9 +68,13 @@ export function ColorPaletteGrid({
               color={color.rgb}
               selected={selectedColor?.hex === color.hex}
               onClick={onColorSelect ? () => onColorSelect(color) : undefined}
+              draggable
             />
           ))}
         </SimpleGrid>
+        <Text size="xs" ta="center" style={{ color: 'var(--text-tertiary)', opacity: 0.6 }}>
+          Drag colors onto slots below
+        </Text>
       </Stack>
     </Paper>
   );

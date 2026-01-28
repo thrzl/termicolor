@@ -1,5 +1,5 @@
 /**
- * Editor for a single color slot with color picker.
+ * Editor for a single color slot with color picker and drop support.
  * Compact vertical layout: label on top, swatch in middle, hex below.
  */
 
@@ -9,6 +9,7 @@ import type { RGBColor } from '@/types/color';
 import { rgbToHex, hexToRgb } from '@/lib/color/conversion';
 import type { ContrastInfo } from '@/lib/color/readability';
 import { ContrastBadge } from './ContrastBadge';
+import { COLOR_DRAG_TYPE } from '../palette/ColorSwatch';
 
 interface ColorSlotEditorProps {
   label: string;
@@ -19,7 +20,7 @@ interface ColorSlotEditorProps {
 }
 
 /**
- * Editable color slot with popover color picker and optional contrast badge.
+ * Editable color slot with popover color picker, drop support, and optional contrast badge.
  * Vertically stacked layout for compact grid display.
  */
 export function ColorSlotEditor({
@@ -30,6 +31,7 @@ export function ColorSlotEditor({
   contrastInfo,
 }: ColorSlotEditorProps) {
   const [opened, setOpened] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
   const hex = rgbToHex(color);
   const [hexInput, setHexInput] = useState(hex);
 
@@ -53,6 +55,32 @@ export function ColorSlotEditor({
     }
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    if (e.dataTransfer.types.includes(COLOR_DRAG_TYPE)) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+      setIsDragOver(true);
+    }
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const data = e.dataTransfer.getData(COLOR_DRAG_TYPE);
+    if (data) {
+      try {
+        const droppedColor = JSON.parse(data) as RGBColor;
+        onChange(droppedColor);
+      } catch {
+        // Invalid data, ignore
+      }
+    }
+  };
+
   // Sync hexInput when color changes externally (from color picker or props)
   useEffect(() => {
     setHexInput(hex);
@@ -63,6 +91,9 @@ export function ColorSlotEditor({
       <Popover.Target>
         <UnstyledButton
           onClick={() => setOpened((o) => !o)}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
           style={{
             display: 'flex',
             flexDirection: 'column',
@@ -70,8 +101,11 @@ export function ColorSlotEditor({
             gap: 4,
             padding: '6px 4px',
             borderRadius: 'var(--mantine-radius-sm)',
-            transition: 'background 0.15s ease',
+            transition: 'all 0.15s ease',
             minWidth: 60,
+            outline: isDragOver ? '2px dashed #8b5cf6' : 'none',
+            outlineOffset: 2,
+            background: isDragOver ? 'rgba(139, 92, 246, 0.1)' : 'transparent',
           }}
           styles={{
             root: {
@@ -102,8 +136,9 @@ export function ColorSlotEditor({
               height: size,
               backgroundColor: hex,
               borderRadius: 'var(--mantine-radius-sm)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: `0 0 8px ${hex}40`,
+              border: isDragOver ? '2px solid #8b5cf6' : '1px solid rgba(255, 255, 255, 0.1)',
+              boxShadow: isDragOver ? '0 0 16px rgba(139, 92, 246, 0.5)' : `0 0 8px ${hex}40`,
+              transition: 'all 0.15s ease',
             }}
           />
           <Text
