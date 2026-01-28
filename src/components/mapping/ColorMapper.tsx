@@ -3,15 +3,15 @@
  * Linear-style purple gradient aesthetic.
  */
 
-import { Stack, SimpleGrid, Paper, Text, Group, Button, Switch, Slider, Tooltip } from '@mantine/core';
-import { IconBrush, IconDice5, IconSparkles, IconDroplet } from '@tabler/icons-react';
+import { Stack, SimpleGrid, Paper, Text, Group, Button } from '@mantine/core';
+import { IconBrush, IconDice5 } from '@tabler/icons-react';
 import type { ColorScheme, ANSIColorName, UIColorName, RGBColor, ExtractedColor } from '@/types/color';
 import { UI_COLOR_ORDER, UI_DISPLAY_NAMES } from '@/lib/iterm/schema';
 import type { ReadabilityReport } from '@/lib/color/readability';
 import { getContrastInfo } from '@/lib/color/readability';
 import { ANSIColorGrid } from './ANSIColorGrid';
 import { ColorSlotEditor } from './ColorSlotEditor';
-import { ReadabilityScore } from './ReadabilityScore';
+import { ThemeTuner } from './ThemeTuner';
 
 interface ColorMapperProps {
   scheme: ColorScheme;
@@ -64,84 +64,17 @@ export function ColorMapper({
 
   return (
     <Stack gap="md">
-      {/* Readability Score with contrast slider */}
-      <ReadabilityScore
+      {/* Unified Theme Tuner with all adjustments */}
+      <ThemeTuner
         report={readabilityReport}
         minContrast={minContrast}
+        vibrantSyntax={vibrantSyntax}
+        saturationLevel={saturationLevel}
         onMinContrastChange={onMinContrastChange}
         onAutoFix={onAutoFix}
+        onVibrantSyntaxChange={onVibrantSyntaxChange}
+        onSaturationLevelChange={onSaturationLevelChange}
       />
-
-      {/* Color Adjustments */}
-      <Paper
-        p="md"
-        radius="md"
-        style={{
-          background: 'var(--bg-card)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid var(--border-subtle)',
-          boxShadow: 'var(--shadow-card)',
-        }}
-      >
-        <Stack gap="md">
-          <Group justify="space-between" align="center">
-            <Tooltip
-              label="Replace gray ANSI colors with saturated versions for better syntax highlighting visibility"
-              multiline
-              w={250}
-            >
-              <Group gap="xs" style={{ cursor: 'help' }}>
-                <IconSparkles size={16} style={{ color: '#f59e0b' }} />
-                <Text fw={500} size="sm" style={{ color: 'var(--text-secondary)' }}>
-                  Vibrant syntax colors
-                </Text>
-              </Group>
-            </Tooltip>
-            <Switch
-              checked={vibrantSyntax}
-              onChange={(e) => onVibrantSyntaxChange(e.currentTarget.checked)}
-              size="sm"
-              styles={{
-                track: {
-                  backgroundColor: vibrantSyntax ? '#8b5cf6' : 'var(--border-subtle)',
-                  borderColor: vibrantSyntax ? '#8b5cf6' : 'var(--border-subtle)',
-                },
-                thumb: {
-                  backgroundColor: '#fff',
-                  borderColor: vibrantSyntax ? '#8b5cf6' : 'var(--border-subtle)',
-                },
-              }}
-            />
-          </Group>
-          <Group gap="md" align="center">
-            <Group gap="xs" style={{ minWidth: 100 }}>
-              <IconDroplet size={16} style={{ color: '#8b5cf6' }} />
-              <Text fw={500} size="sm" style={{ color: 'var(--text-secondary)' }}>
-                Saturation
-              </Text>
-            </Group>
-            <Slider
-              value={saturationLevel}
-              onChange={onSaturationLevelChange}
-              min={0.25}
-              max={2}
-              step={0.05}
-              marks={[
-                { value: 0.5, label: '50%' },
-                { value: 1, label: '100%' },
-                { value: 1.5, label: '150%' },
-              ]}
-              style={{ flex: 1 }}
-              styles={{
-                track: { background: 'var(--border-subtle)' },
-                bar: { background: 'linear-gradient(90deg, #8b5cf6, #a78bfa)' },
-                thumb: { borderColor: '#8b5cf6', background: '#fff' },
-                markLabel: { fontSize: 10, color: 'var(--text-tertiary)' },
-              }}
-            />
-          </Group>
-        </Stack>
-      </Paper>
 
       {/* ANSI Colors Grid with regenerate button */}
       <ANSIColorGrid
