@@ -24,10 +24,10 @@ interface UseColorExtractionResult {
 /**
  * Hook for extracting colors from images.
  *
- * :param colorCount: Number of colors to extract (default 32).
+ * :param maxColors: Maximum number of distinct colors to extract (default 10).
  * :returns: Extraction state and methods.
  */
-export function useColorExtraction(colorCount: number = 32): UseColorExtractionResult {
+export function useColorExtraction(maxColors: number = 10): UseColorExtractionResult {
   const [colors, setColors] = useState<ExtractedColor[]>([]);
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +40,7 @@ export function useColorExtraction(colorCount: number = 32): UseColorExtractionR
     try {
       // Extract colors and create thumbnail in parallel
       const [extractedColors, thumb] = await Promise.all([
-        extractColorsFromFile(file, colorCount),
+        extractColorsFromFile(file, maxColors),
         createThumbnail(file),
       ]);
 
@@ -54,7 +54,7 @@ export function useColorExtraction(colorCount: number = 32): UseColorExtractionR
     } finally {
       setIsLoading(false);
     }
-  }, [colorCount]);
+  }, [maxColors]);
 
   const clearColors = useCallback(() => {
     setColors([]);

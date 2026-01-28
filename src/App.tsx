@@ -76,9 +76,13 @@ export function App() {
   const { importFromFile, isImporting, importError } = useImport();
   const { shareToTwitter, shareToReddit, isSharing, trackShare } = useShare();
 
-  // Generate scheme when colors are extracted
+  // Generate scheme when colors are extracted (only on new colors, not mode toggle)
+  // We track the colors reference to avoid regenerating when just toggling dark/light mode
+  const colorsRef = useRef(colors);
   useEffect(() => {
-    if (colors.length > 0) {
+    // Only regenerate if colors actually changed (new image uploaded)
+    if (colors.length > 0 && colors !== colorsRef.current) {
+      colorsRef.current = colors;
       generateScheme(colors);
     }
   }, [colors, generateScheme]);

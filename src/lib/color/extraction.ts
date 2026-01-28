@@ -77,15 +77,103 @@ function colorExistsInPalette(color: RGBColor, palette: ExtractedColor[], tolera
 }
 
 /**
+ * Calculates perceptual color distance between two colors.
+ * Uses weighted Euclidean distance in RGB space with human perception weights.
+ *
+ * :param c1: First color.
+ * :param c2: Second color.
+ * :returns: Distance value (0 = identical, higher = more different).
+ */
+function colorDistance(c1: ExtractedColor, c2: ExtractedColor): number {
+  // Weighted RGB distance (human eye is more sensitive to green)
+  const rDiff = c1.rgb.r - c2.rgb.r;
+  const gDiff = c1.rgb.g - c2.rgb.g;
+  const bDiff = c1.rgb.b - c2.rgb.b;
+  const rgbDist = Math.sqrt(2 * rDiff * rDiff + 4 * gDiff * gDiff + 3 * bDiff * bDiff);
+
+  // Also factor in hue distance for better perceptual clustering
+  const hueDiff = Math.min(Math.abs(c1.hsl.h - c2.hsl.h), 360 - Math.abs(c1.hsl.h - c2.hsl.h));
+  const satDiff = Math.abs(c1.hsl.s - c2.hsl.s);
+  const lumDiff = Math.abs(c1.hsl.l - c2.hsl.l);
+
+  // Combine RGB and HSL distances
+  return rgbDist * 0.6 + hueDiff * 0.8 + satDiff * 0.3 + lumDiff * 0.5;
+}
+
+/**
+ * Clusters similar colors together and returns representative colors.
+ * Uses a greedy clustering approach to find distinct colors.
+ *
+ * :param colors: Array of extracted colors.
+ * :param maxColors: Maximum number of colors to return.
+ * :param minDistance: Minimum perceptual distance between clusters.
+ * :returns: Array of distinct representative colors.
+ */
+function clusterColors(
+  colors: ExtractedColor[],
+  maxColors: number = 10,
+  minDistance: number = 50
+): ExtractedColor[] {
+  if (colors.length <= maxColors) {
+    return colors;
+  }
+
+  // Sort by population (most prominent first)
+  const sorted = [...colors].sort((a, b) => b.population - a.population);
+  const clusters: ExtractedColor[] = [];
+
+  for (const color of sorted) {
+    // Check if this color is far enough from all existing clusters
+    const isFarEnough = clusters.every(
+      cluster => colorDistance(color, cluster) >= minDistance
+    );
+
+    if (isFarEnough) {
+      clusters.push(color);
+      if (clusters.length >= maxColors) {
+        break;
+      }
+    }
+  }
+
+  // If we don't have enough colors, relax the distance requirement
+  if (clusters.length < maxColors) {
+    for (const color of sorted) {
+      if (!clusters.includes(color)) {
+        const isFarEnough = clusters.every(
+          cluster => colorDistance(color, cluster) >= minDistance * 0.5
+        );
+        if (isFarEnough) {
+          clusters.push(color);
+          if (clusters.length >= maxColors) {
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  // Sort final result by luminosity for better display
+  return clusters.sort((a, b) => a.hsl.l - b.hsl.l);
+}
+
+/** Default number of raw colors to extract before clustering. */
+const RAW_COLOR_COUNT = 24;
+
+/** Target number of distinct colors after clustering. */
+const TARGET_COLOR_COUNT = 10;
+
+/**
  * Extracts colors from an image element.
+ * Extracts a larger palette then clusters to find distinct representative colors.
  *
  * :param img: HTML image element to extract colors from.
- * :param colorCount: Number of colors to extract (default 32).
+ * :param maxColors: Maximum number of distinct colors to return (default 10).
  * :returns: Promise resolving to array of extracted colors.
  */
 export async function extractColorsFromImage(
   img: HTMLImageElement,
-  colorCount: number = 32
+  maxColors: number = TARGET_COLOR_COUNT
 ): Promise<ExtractedColor[]> {
   // Ensure image is loaded
   if (!img.complete) {
@@ -95,8 +183,9 @@ export async function extractColorsFromImage(
     });
   }
 
-  // Extract palette using ColorThief
-  const palette = colorThief.getPalette(img, colorCount, 10);
+  // Extract more colors than needed, then cluster for distinctiveness
+  const rawCount = Math.max(RAW_COLOR_COUNT, maxColors * 2);
+  const palette = colorThief.getPalette(img, rawCount, 10);
 
   if (!palette) {
     return [];
@@ -111,7 +200,7 @@ export async function extractColorsFromImage(
       hsl,
       hex: rgbToHex(rgb),
       // ColorThief returns colors sorted by prevalence, so we use index as proxy for population
-      population: colorCount - index,
+      population: rawCount - index,
     };
   });
 
@@ -124,23 +213,24 @@ export async function extractColorsFromImage(
       rgb: cornerColor,
       hsl,
       hex: rgbToHex(cornerColor),
-      population: colorCount + 1,
+      population: rawCount + 1,
     });
   }
 
-  return colors;
+  // Cluster similar colors and return distinct representatives
+  return clusterColors(colors, maxColors);
 }
 
 /**
  * Extracts colors from an image file.
  *
  * :param file: Image file to extract colors from.
- * :param colorCount: Number of colors to extract.
+ * :param maxColors: Maximum number of distinct colors to return.
  * :returns: Promise resolving to array of extracted colors.
  */
 export async function extractColorsFromFile(
   file: File,
-  colorCount: number = 32
+  maxColors: number = TARGET_COLOR_COUNT
 ): Promise<ExtractedColor[]> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -148,7 +238,7 @@ export async function extractColorsFromFile(
 
     img.onload = async () => {
       try {
-        const colors = await extractColorsFromImage(img, colorCount);
+        const colors = await extractColorsFromImage(img, maxColors);
         URL.revokeObjectURL(img.src);
         resolve(colors);
       } catch (err) {
