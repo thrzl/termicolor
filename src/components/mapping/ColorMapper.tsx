@@ -100,8 +100,17 @@ export function ColorMapper({
             <Switch
               checked={vibrantSyntax}
               onChange={(e) => onVibrantSyntaxChange(e.currentTarget.checked)}
-              color="violet"
               size="sm"
+              styles={{
+                track: {
+                  backgroundColor: vibrantSyntax ? '#8b5cf6' : 'var(--border-subtle)',
+                  borderColor: vibrantSyntax ? '#8b5cf6' : 'var(--border-subtle)',
+                },
+                thumb: {
+                  backgroundColor: '#fff',
+                  borderColor: vibrantSyntax ? '#8b5cf6' : 'var(--border-subtle)',
+                },
+              }}
             />
           </Group>
           <Group gap="md" align="center">

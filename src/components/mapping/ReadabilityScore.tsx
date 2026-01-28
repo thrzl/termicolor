@@ -162,7 +162,7 @@ export function ReadabilityScore({
                       boxShadow: '0 0 15px rgba(139, 92, 246, 0.3)',
                     }}
                   >
-                    <IconWand size={18} color="#000" />
+                    <IconWand size={18} color="#fff" />
                   </UnstyledButton>
                 </Tooltip>
               </Menu.Target>
