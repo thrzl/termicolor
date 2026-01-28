@@ -2,7 +2,7 @@
  * Hook for managing color scheme mapping and editing.
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import type { ExtractedColor, ColorScheme, ANSIColorName, UIColorName, RGBColor } from '@/types/color';
 import { DEFAULT_ANSI_COLORS, DEFAULT_UI_COLORS } from '@/types/color';
 import { createColorScheme, toggleSchemeMode } from '@/lib/color/mapping';
@@ -90,6 +90,9 @@ export function useColorMapping(): UseColorMappingResult {
   const [vibrantSyntax, setVibrantSyntaxState] = useState(false);
   const [saturationLevel, setSaturationLevelState] = useState(1);
 
+  // Store base ANSI colors (before saturation adjustment) so we can always recompute
+  const baseAnsiColorsRef = useRef<Record<ANSIColorName, RGBColor>>(DEFAULT_ANSI_COLORS);
+
   /**
    * Applies vibrant syntax colors by boosting gray ANSI colors to saturated versions.
    */
@@ -113,24 +116,6 @@ export function useColorMapping(): UseColorMappingResult {
     return { ...inputScheme, ansi: newAnsi };
   }, []);
 
-  /**
-   * Applies saturation adjustment to all ANSI colors.
-   */
-  const applySaturationLevel = useCallback((inputScheme: ColorScheme, level: number): ColorScheme => {
-    if (level === 1) return inputScheme;
-
-    const newAnsi = { ...inputScheme.ansi };
-    for (const name of Object.keys(newAnsi) as ANSIColorName[]) {
-      // Skip black/white as they should stay neutral
-      if (name === 'black' || name === 'white' || name === 'brightBlack' || name === 'brightWhite') {
-        continue;
-      }
-      newAnsi[name] = adjustSaturation(newAnsi[name], level);
-    }
-
-    return { ...inputScheme, ansi: newAnsi };
-  }, []);
-
   // Compute readability report whenever scheme changes
   const readabilityReport = useMemo(() => {
     const report = analyzeReadability(scheme);
@@ -140,16 +125,27 @@ export function useColorMapping(): UseColorMappingResult {
 
   const generateScheme = useCallback((colors: ExtractedColor[]) => {
     const result = createColorScheme(colors, isDarkMode);
+    baseAnsiColorsRef.current = { ...result.scheme.ansi };
     setScheme(result.scheme);
     setIsGrayscale(result.isGrayscale);
+    // Reset saturation to 1 when generating new scheme
+    setSaturationLevelState(1);
   }, [isDarkMode]);
 
   const toggleMode = useCallback(() => {
-    setScheme((prev) => toggleSchemeMode(prev));
+    setScheme((prev) => {
+      const toggled = toggleSchemeMode(prev);
+      baseAnsiColorsRef.current = { ...toggled.ansi };
+      return toggled;
+    });
     setIsDarkMode((prev) => !prev);
+    // Reset saturation to 1 when toggling mode
+    setSaturationLevelState(1);
   }, []);
 
   const setANSIColor = useCallback((name: ANSIColorName, color: RGBColor) => {
+    // Update base colors too
+    baseAnsiColorsRef.current = { ...baseAnsiColorsRef.current, [name]: color };
     setScheme((prev) => ({
       ...prev,
       ansi: {
@@ -172,12 +168,18 @@ export function useColorMapping(): UseColorMappingResult {
   }, []);
 
   const resetScheme = useCallback(() => {
+    baseAnsiColorsRef.current = { ...DEFAULT_ANSI_COLORS };
     setScheme(DEFAULT_SCHEME);
     setIsDarkMode(true);
+    setSaturationLevelState(1);
   }, []);
 
   const autoFixContrast = useCallback((keepBackground: boolean = false) => {
-    setScheme((prev) => ensureReadability(prev, { minRatio: minContrast, keepBackground }));
+    setScheme((prev) => {
+      const fixed = ensureReadability(prev, { minRatio: minContrast, keepBackground });
+      baseAnsiColorsRef.current = { ...fixed.ansi };
+      return fixed;
+    });
     setSchemeModified(false);
   }, [minContrast]);
 
@@ -239,11 +241,13 @@ export function useColorMapping(): UseColorMappingResult {
       brightWhite: hslToRgb(Math.random() * 360, 5 + Math.random() * 10, 90 + Math.random() * 8),
     };
 
+    baseAnsiColorsRef.current = { ...newAnsi };
     setScheme((prev) => ({
       ...prev,
       ansi: newAnsi,
     }));
     setSchemeModified(true);
+    setSaturationLevelState(1);
   }, []);
 
   const randomizeUIColors = useCallback(() => {
@@ -336,24 +340,37 @@ export function useColorMapping(): UseColorMappingResult {
   const setVibrantSyntax = useCallback((enabled: boolean) => {
     setVibrantSyntaxState(enabled);
     if (enabled) {
-      setScheme((prev) => applyVibrantSyntax(prev));
+      setScheme((prev) => {
+        const vibrant = applyVibrantSyntax(prev);
+        // Update base colors when applying vibrant syntax
+        baseAnsiColorsRef.current = { ...vibrant.ansi };
+        return vibrant;
+      });
+      // Reset saturation when enabling vibrant syntax
+      setSaturationLevelState(1);
     }
     setSchemeModified(true);
   }, [applyVibrantSyntax]);
 
   const setSaturationLevel = useCallback((level: number) => {
-    // Apply the difference from current level
-    const currentLevel = saturationLevel;
     setSaturationLevelState(level);
-    if (level !== currentLevel) {
-      setScheme((prev) => {
-        // Undo current saturation, apply new level
-        const normalized = applySaturationLevel(prev, 1 / currentLevel);
-        return applySaturationLevel(normalized, level);
-      });
-    }
+    // Always apply saturation from base colors to avoid cumulative errors
+    setScheme((prev) => {
+      const newAnsi = { ...baseAnsiColorsRef.current };
+      // Apply saturation adjustment to base colors
+      for (const name of Object.keys(newAnsi) as ANSIColorName[]) {
+        // Skip black/white as they should stay neutral
+        if (name === 'black' || name === 'white' || name === 'brightBlack' || name === 'brightWhite') {
+          continue;
+        }
+        if (level !== 1) {
+          newAnsi[name] = adjustSaturation(baseAnsiColorsRef.current[name], level);
+        }
+      }
+      return { ...prev, ansi: newAnsi };
+    });
     setSchemeModified(true);
-  }, [saturationLevel, applySaturationLevel]);
+  }, []);
 
   return {
     scheme,
