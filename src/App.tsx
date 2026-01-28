@@ -622,21 +622,6 @@ export function App() {
                             </ActionIcon>
                           </Tooltip>
                         </Group>
-                        {/* Hand-drawn text annotation */}
-                        <Text
-                          style={{
-                            fontFamily: '"Caveat", cursive',
-                            fontSize: '22px',
-                            fontWeight: 600,
-                            color: '#8b5cf6',
-                            opacity: 0.7,
-                            transform: 'rotate(-2deg)',
-                            marginTop: 6,
-                            textAlign: 'center',
-                          }}
-                        >
-                          Share your theme!
-                        </Text>
                       </Stack>
                     </Paper>
                   )}
