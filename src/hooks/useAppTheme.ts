@@ -3,7 +3,7 @@
  * Persists to localStorage and respects system preference.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 type Theme = 'light' | 'dark';
 
@@ -54,21 +54,36 @@ export function useAppTheme() {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
-  const toggleTheme = useCallback((coords?: { x: number; y: number }) => {
+  const isAnimating = useRef(false);
+
+  const toggleTheme = useCallback((coords?: { x: number; y: number; slow?: boolean }) => {
+    if (isAnimating.current) return;
+
     const x = coords?.x ?? window.innerWidth / 2;
     const y = coords?.y ?? window.innerHeight / 2;
     const root = document.documentElement;
     root.style.setProperty('--toggle-x', `${x}px`);
     root.style.setProperty('--toggle-y', `${y}px`);
 
+    // Direction: dark→light expands, light→dark contracts
+    const direction = theme === 'dark' ? 'expand' : 'contract';
+    root.setAttribute('data-theme-direction', direction);
+
+    // Slow mode for long-press cinematic transition
+    root.style.setProperty('--transition-duration', coords?.slow ? '1.5s' : '0.5s');
+
     if (document.startViewTransition) {
-      document.startViewTransition(() => {
+      isAnimating.current = true;
+      const transition = document.startViewTransition(() => {
         setThemeState((prev) => (prev === 'dark' ? 'light' : 'dark'));
+      });
+      transition.finished.finally(() => {
+        isAnimating.current = false;
       });
     } else {
       setThemeState((prev) => (prev === 'dark' ? 'light' : 'dark'));
     }
-  }, []);
+  }, [theme]);
 
   const setTheme = useCallback((newTheme: Theme) => {
     setThemeState(newTheme);

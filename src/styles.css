@@ -298,27 +298,93 @@ body {
   z-index: -1;
 }
 
-/* Theme transition - circular reveal */
+/* Theme transition - directional circular reveal */
+
+/* Register custom property for animated radial-gradient stops (Chrome/Edge 85+) */
+@property --reveal-radius {
+  syntax: '<percentage>';
+  initial-value: 0%;
+  inherits: false;
+}
+
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
 }
 
-::view-transition-old(root) {
+/* Expand: dark → light — new theme circle grows in */
+[data-theme-direction="expand"] ::view-transition-old(root) {
   z-index: 1;
 }
 
-::view-transition-new(root) {
+[data-theme-direction="expand"] ::view-transition-new(root) {
   z-index: 9999;
-  animation: theme-reveal 0.5s ease-in-out;
+  animation: reveal-expand var(--transition-duration, 0.5s) ease-in-out;
 }
 
-@keyframes theme-reveal {
+/* Contract: light → dark — old theme circle shrinks away */
+[data-theme-direction="contract"] ::view-transition-new(root) {
+  z-index: 1;
+}
+
+[data-theme-direction="contract"] ::view-transition-old(root) {
+  z-index: 9999;
+  animation: reveal-contract var(--transition-duration, 0.5s) ease-in-out;
+}
+
+/* Expand keyframes — soft purple-tinted fringe via mask-image */
+@keyframes reveal-expand {
   from {
+    --reveal-radius: 0%;
+    mask-image: radial-gradient(
+      circle at var(--toggle-x) var(--toggle-y),
+      black 0%,
+      rgba(139, 92, 246, 0.4) 0%,
+      transparent 0%
+    );
     clip-path: circle(0% at var(--toggle-x) var(--toggle-y));
   }
   to {
+    --reveal-radius: 150%;
+    mask-image: radial-gradient(
+      circle at var(--toggle-x) var(--toggle-y),
+      black 150%,
+      rgba(139, 92, 246, 0.4) 153%,
+      transparent 156%
+    );
     clip-path: circle(150% at var(--toggle-x) var(--toggle-y));
+  }
+}
+
+/* Contract keyframes — reverse reveal with fringe */
+@keyframes reveal-contract {
+  from {
+    --reveal-radius: 150%;
+    mask-image: radial-gradient(
+      circle at var(--toggle-x) var(--toggle-y),
+      black 150%,
+      rgba(139, 92, 246, 0.4) 153%,
+      transparent 156%
+    );
+    clip-path: circle(150% at var(--toggle-x) var(--toggle-y));
+  }
+  to {
+    --reveal-radius: 0%;
+    mask-image: radial-gradient(
+      circle at var(--toggle-x) var(--toggle-y),
+      black 0%,
+      rgba(139, 92, 246, 0.4) 0%,
+      transparent 0%
+    );
+    clip-path: circle(0% at var(--toggle-x) var(--toggle-y));
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.01ms !important;
   }
 }

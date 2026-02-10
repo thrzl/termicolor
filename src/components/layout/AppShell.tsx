@@ -3,7 +3,9 @@
  * Linear-style purple gradient aesthetic - minimal wrapper with floating icons.
  */
 
+import { useRef } from 'react';
 import { Box, ActionIcon, Tooltip, Group } from '@mantine/core';
+import { useHotkeys } from '@mantine/hooks';
 import { IconBrandGithub, IconSun, IconMoon } from '@tabler/icons-react';
 import { useAppTheme } from '@/hooks/useAppTheme';
 
@@ -16,6 +18,10 @@ interface AppShellProps {
  */
 export function AppShell({ children }: AppShellProps) {
   const { isDark, toggleTheme } = useAppTheme();
+  const pointerDownTime = useRef<number | null>(null);
+
+  // Keyboard shortcut: Ctrl+Shift+L / Cmd+Shift+L
+  useHotkeys([['mod+shift+L', () => toggleTheme()]]);
 
   const iconButtonStyle = {
     background: isDark ? 'rgba(26, 27, 35, 0.8)' : 'rgba(255, 255, 255, 0.8)',
@@ -58,12 +64,38 @@ export function AppShell({ children }: AppShellProps) {
             variant="subtle"
             size="lg"
             radius="md"
-            onClick={(e: React.MouseEvent) => toggleTheme({ x: e.clientX, y: e.clientY })}
+            onPointerDown={() => { pointerDownTime.current = Date.now(); }}
+            onClick={(e: React.MouseEvent) => {
+              const held = pointerDownTime.current ? Date.now() - pointerDownTime.current : 0;
+              pointerDownTime.current = null;
+              toggleTheme({ x: e.clientX, y: e.clientY, slow: held > 500 });
+            }}
             style={iconButtonStyle}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            {isDark ? <IconSun size={18} /> : <IconMoon size={18} />}
+            <Box style={{ position: 'relative', width: 18, height: 18 }}>
+              <IconSun
+                size={18}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  opacity: isDark ? 1 : 0,
+                  transform: isDark ? 'rotate(0deg) scale(1)' : 'rotate(90deg) scale(0.5)',
+                  transition: 'opacity 0.3s ease, transform 0.3s ease',
+                }}
+              />
+              <IconMoon
+                size={18}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  opacity: isDark ? 0 : 1,
+                  transform: isDark ? 'rotate(-90deg) scale(0.5)' : 'rotate(0deg) scale(1)',
+                  transition: 'opacity 0.3s ease, transform 0.3s ease',
+                }}
+              />
+            </Box>
           </ActionIcon>
         </Tooltip>
         <Tooltip label="View on GitHub">
