@@ -12,6 +12,7 @@ import { rgbToHex } from '../color/conversion';
  * corresponding ANSI colors.
  */
 export interface WindowsTerminalScheme {
+  _generator: string;
   name: string;
   background: string;
   foreground: string;
@@ -47,6 +48,7 @@ export function generateWindowsTerminalScheme(
   name: string
 ): WindowsTerminalScheme {
   return {
+    _generator: 'Termicolor (https://termicolor.io)',
     name,
     background: rgbToHex(scheme.ui.background),
     foreground: rgbToHex(scheme.ui.foreground),

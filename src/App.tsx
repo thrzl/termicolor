@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Container, Grid, Stack, Title, Text, Button, Group, TextInput, Modal, Tabs, Paper, Box, Menu, UnstyledButton, Tooltip, ActionIcon } from '@mantine/core';
+import { Container, Grid, Stack, Title, Text, Button, Group, TextInput, Modal, Tabs, Paper, Box, Menu, UnstyledButton, Tooltip, ActionIcon, Anchor } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
 import {
@@ -43,6 +43,26 @@ import type { ExportFormat } from './lib/exporters';
 
 import type { Profile } from './types/profile';
 import type { ExtractedColor } from './types/color';
+
+/**
+ * Returns JSX notification message for export success with a Ko-fi CTA.
+ */
+function exportSuccessMessage(filename: string) {
+  return (
+    <>
+      Exported "{filename}".{' '}
+      <Anchor
+        href="https://ko-fi.com/rugvin"
+        target="_blank"
+        rel="noopener noreferrer"
+        size="sm"
+        style={{ color: '#8b5cf6' }}
+      >
+        Enjoying Termicolor? Support on Ko-fi ☕
+      </Anchor>
+    </>
+  );
+}
 
 /**
  * Main application component.
@@ -226,8 +246,9 @@ export function App() {
     downloadScheme(profile.scheme, profile.name);
     notifications.show({
       title: 'Downloaded',
-      message: `Exported "${profile.name}.itermcolors"`,
+      message: exportSuccessMessage(`${profile.name}.itermcolors`),
       color: 'green',
+      autoClose: 6000,
     });
   }, [downloadScheme]);
 
@@ -238,8 +259,9 @@ export function App() {
     downloadScheme(scheme, name, format);
     notifications.show({
       title: 'Downloaded',
-      message: `Exported "${name}.${formatInfo?.extension || 'itermcolors'}"`,
+      message: exportSuccessMessage(`${name}.${formatInfo?.extension || 'itermcolors'}`),
       color: 'green',
+      autoClose: 6000,
     });
   }, [scheme, profileName, downloadScheme, formats]);
 

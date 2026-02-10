@@ -200,7 +200,7 @@ async function generateShareImage(
   ctx.fillStyle = 'rgba(139, 92, 246, 0.7)';
   ctx.font = '12px "Space Grotesk", system-ui, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('Create terminal themes from any image', canvasWidth / 2, canvasHeight - padding + 8);
+  ctx.fillText('termicolor.io — Create terminal themes from any image', canvasWidth / 2, canvasHeight - padding + 8);
 
   // Convert to blob
   return new Promise((resolve, reject) => {
@@ -245,7 +245,7 @@ export function useShare(): UseShareResult {
 
       const shareData = {
         title: 'My Termicolor Theme',
-        text: 'Check out this terminal color scheme I created with Termicolor!',
+        text: 'Check out this terminal color scheme I created from an image with Termicolor!',
         url: 'https://termicolor.io',
         files: [file],
       };
@@ -281,7 +281,7 @@ export function useShare(): UseShareResult {
       sendTrackEvent('twitter');
 
       // Open Twitter compose with pre-filled text including the share URL
-      const tweetText = encodeURIComponent(`Check out this terminal color scheme I created with Termicolor! 🎨\n\n${shareUrl}`);
+      const tweetText = encodeURIComponent(`Just created a custom terminal color scheme from an image with Termicolor! 🎨✨\n\n${shareUrl}\n\n#terminal #dotfiles #colorscheme #devtools`);
       const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
 
       window.open(twitterUrl, '_blank', 'noopener,noreferrer');
@@ -301,7 +301,7 @@ export function useShare(): UseShareResult {
       sendTrackEvent('reddit');
 
       // Open Reddit submit page with link type
-      const title = encodeURIComponent('[Terminal] Color scheme created with Termicolor');
+      const title = encodeURIComponent('[Terminal] Custom color scheme generated from an image with Termicolor');
       const redditUrl = `https://www.reddit.com/r/unixporn/submit?type=LINK&url=${encodeURIComponent(shareUrl)}&title=${title}`;
 
       window.open(redditUrl, '_blank', 'noopener,noreferrer');
