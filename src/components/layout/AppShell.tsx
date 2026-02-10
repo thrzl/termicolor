@@ -58,7 +58,7 @@ export function AppShell({ children }: AppShellProps) {
             variant="subtle"
             size="lg"
             radius="md"
-            onClick={toggleTheme}
+            onClick={(e: React.MouseEvent) => toggleTheme({ x: e.clientX, y: e.clientY })}
             style={iconButtonStyle}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}

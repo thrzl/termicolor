@@ -297,3 +297,28 @@ body {
   opacity: 0.6;
   z-index: -1;
 }
+
+/* Theme transition - circular reveal */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+  animation: theme-reveal 0.5s ease-in-out;
+}
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0% at var(--toggle-x) var(--toggle-y));
+  }
+  to {
+    clip-path: circle(150% at var(--toggle-x) var(--toggle-y));
+  }
+}

@@ -54,8 +54,20 @@ export function useAppTheme() {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
-  const toggleTheme = useCallback(() => {
-    setThemeState((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  const toggleTheme = useCallback((coords?: { x: number; y: number }) => {
+    const x = coords?.x ?? window.innerWidth / 2;
+    const y = coords?.y ?? window.innerHeight / 2;
+    const root = document.documentElement;
+    root.style.setProperty('--toggle-x', `${x}px`);
+    root.style.setProperty('--toggle-y', `${y}px`);
+
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        setThemeState((prev) => (prev === 'dark' ? 'light' : 'dark'));
+      });
+    } else {
+      setThemeState((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    }
   }, []);
 
   const setTheme = useCallback((newTheme: Theme) => {
