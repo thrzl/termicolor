@@ -65,18 +65,39 @@ export function useAppTheme() {
     root.style.setProperty('--toggle-x', `${x}px`);
     root.style.setProperty('--toggle-y', `${y}px`);
 
-    // Direction: dark→light expands, light→dark contracts
-    const direction = theme === 'dark' ? 'expand' : 'contract';
-    root.setAttribute('data-theme-direction', direction);
+    // dark→light expands (new theme circle grows), light→dark contracts (old shrinks)
+    const expanding = theme === 'dark';
+    const duration = coords?.slow ? 1500 : 500;
 
-    // Slow mode for long-press cinematic transition
-    root.style.setProperty('--transition-duration', coords?.slow ? '1.5s' : '0.5s');
+    // z-index via custom properties (these inherit into view-transition pseudos)
+    root.style.setProperty('--vt-old-z', expanding ? '1' : '9999');
+    root.style.setProperty('--vt-new-z', expanding ? '9999' : '1');
 
     if (document.startViewTransition) {
       isAnimating.current = true;
       const transition = document.startViewTransition(() => {
         setThemeState((prev) => (prev === 'dark' ? 'light' : 'dark'));
       });
+
+      // Animate clip-path via Web Animations API (view-transition pseudos
+      // live in a separate overlay tree, so CSS descendant selectors can't target them)
+      transition.ready.then(() => {
+        const pseudo = expanding
+          ? '::view-transition-new(root)'
+          : '::view-transition-old(root)';
+        const from = expanding
+          ? `circle(0% at ${x}px ${y}px)`
+          : `circle(150% at ${x}px ${y}px)`;
+        const to = expanding
+          ? `circle(150% at ${x}px ${y}px)`
+          : `circle(0% at ${x}px ${y}px)`;
+
+        document.documentElement.animate(
+          { clipPath: [from, to] },
+          { duration, easing: 'ease-in-out', pseudoElement: pseudo },
+        );
+      });
+
       transition.finished.finally(() => {
         isAnimating.current = false;
       });

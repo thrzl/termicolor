@@ -298,87 +298,22 @@ body {
   z-index: -1;
 }
 
-/* Theme transition - directional circular reveal */
-
-/* Register custom property for animated radial-gradient stops (Chrome/Edge 85+) */
-@property --reveal-radius {
-  syntax: '<percentage>';
-  initial-value: 0%;
-  inherits: false;
-}
-
+/* Theme transition - directional circular reveal
+   Animation is driven by the Web Animations API in useAppTheme.ts.
+   z-index is controlled via custom properties (they inherit into
+   the view-transition overlay tree, unlike descendant selectors). */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
   mix-blend-mode: normal;
 }
 
-/* Expand: dark → light — new theme circle grows in */
-[data-theme-direction="expand"] ::view-transition-old(root) {
-  z-index: 1;
+::view-transition-old(root) {
+  z-index: var(--vt-old-z, 1);
 }
 
-[data-theme-direction="expand"] ::view-transition-new(root) {
-  z-index: 9999;
-  animation: reveal-expand var(--transition-duration, 0.5s) ease-in-out;
-}
-
-/* Contract: light → dark — old theme circle shrinks away */
-[data-theme-direction="contract"] ::view-transition-new(root) {
-  z-index: 1;
-}
-
-[data-theme-direction="contract"] ::view-transition-old(root) {
-  z-index: 9999;
-  animation: reveal-contract var(--transition-duration, 0.5s) ease-in-out;
-}
-
-/* Expand keyframes — soft purple-tinted fringe via mask-image */
-@keyframes reveal-expand {
-  from {
-    --reveal-radius: 0%;
-    mask-image: radial-gradient(
-      circle at var(--toggle-x) var(--toggle-y),
-      black 0%,
-      rgba(139, 92, 246, 0.4) 0%,
-      transparent 0%
-    );
-    clip-path: circle(0% at var(--toggle-x) var(--toggle-y));
-  }
-  to {
-    --reveal-radius: 150%;
-    mask-image: radial-gradient(
-      circle at var(--toggle-x) var(--toggle-y),
-      black 150%,
-      rgba(139, 92, 246, 0.4) 153%,
-      transparent 156%
-    );
-    clip-path: circle(150% at var(--toggle-x) var(--toggle-y));
-  }
-}
-
-/* Contract keyframes — reverse reveal with fringe */
-@keyframes reveal-contract {
-  from {
-    --reveal-radius: 150%;
-    mask-image: radial-gradient(
-      circle at var(--toggle-x) var(--toggle-y),
-      black 150%,
-      rgba(139, 92, 246, 0.4) 153%,
-      transparent 156%
-    );
-    clip-path: circle(150% at var(--toggle-x) var(--toggle-y));
-  }
-  to {
-    --reveal-radius: 0%;
-    mask-image: radial-gradient(
-      circle at var(--toggle-x) var(--toggle-y),
-      black 0%,
-      rgba(139, 92, 246, 0.4) 0%,
-      transparent 0%
-    );
-    clip-path: circle(0% at var(--toggle-x) var(--toggle-y));
-  }
+::view-transition-new(root) {
+  z-index: var(--vt-new-z, 9999);
 }
 
 /* Reduced motion */
