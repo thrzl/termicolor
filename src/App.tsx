@@ -375,7 +375,7 @@ export function App() {
             pointerEvents: 'none',
           }}
         />
-        <Container size="xl" style={{ position: 'relative', zIndex: 2 }}>
+        <Container size="lg" style={{ position: 'relative', zIndex: 2 }}>
           <Stack align="center" gap="md">
             <Group gap="md" align="center">
               <Box
@@ -485,7 +485,7 @@ export function App() {
         </Container>
       </Box>
 
-      <Container size="xl" style={{ position: 'relative', zIndex: 2 }}>
+      <Container size="lg" style={{ position: 'relative', zIndex: 2 }}>
         <Grid gutter="xl">
           {/* Left column: Tabs with Image/Palette or Profiles */}
           <Grid.Col span={{ base: 12, md: 4 }}>
