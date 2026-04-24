@@ -22,3 +22,12 @@ npm-debug.log*
 
 # Cache
 .cache/
+
+# TypeScript incremental build info
+*.tsbuildinfo
+
+# Cloudflare Wrangler local state
+.wrangler/
+
+# claude-flow local state
+.claude-flow/

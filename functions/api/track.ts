@@ -25,6 +25,25 @@ interface ShareStats {
 
 const STATS_KEY = 'share_stats';
 
+const ALLOWED_ORIGINS = new Set([
+  'https://termicolor.io',
+  'https://www.termicolor.io',
+]);
+
+/**
+ * Resolve the CORS origin for a request.
+ *
+ * Returns the request's Origin header if it's in the allowlist, otherwise
+ * the canonical site origin. GET (read-only) requests fall back to '*'.
+ */
+function resolveCorsOrigin(request: Request): string {
+  const origin = request.headers.get('origin');
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    return origin;
+  }
+  return request.method === 'GET' ? '*' : 'https://termicolor.io';
+}
+
 /**
  * Get current share statistics.
  */
@@ -48,6 +67,14 @@ async function getStats(kv: KVNamespace): Promise<ShareStats> {
  */
 async function handlePost(request: Request, env: Env): Promise<Response> {
   try {
+    const origin = request.headers.get('origin');
+    if (!origin || !ALLOWED_ORIGINS.has(origin)) {
+      return new Response(
+        JSON.stringify({ error: 'Forbidden' }),
+        { status: 403, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     const body = await request.json() as TrackRequest;
     const { platform } = body;
 
@@ -96,9 +123,10 @@ export const onRequest: PagesFunction<Env> = async (context) => {
 
   // CORS headers
   const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Origin': resolveCorsOrigin(request),
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
+    'Vary': 'Origin',
   };
 
   // Handle CORS preflight
